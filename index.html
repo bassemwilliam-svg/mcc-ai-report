@@ -241,6 +241,7 @@ html[dir="rtl"] .comp.warn{border-right-color:var(--warning);border-left-color:t
 .block-h .n{font-size:.7rem;color:var(--mute);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-left:auto}
 html[dir="rtl"] .block-h .n{margin-left:0;margin-right:auto}
 
+.block{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tbl{width:100%;border-collapse:collapse;font-size:.86rem}
 .tbl th{text-align:left;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-weight:700;padding:.6rem .7rem;border-bottom:2px solid var(--line);background:var(--panel)}
 html[dir="rtl"] .tbl th{text-align:right}
@@ -393,10 +394,140 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
   .pillar,.find,.rec,.kpi,.comp,.meta-tile,.cert-meta > div,.sign-block{break-inside:avoid;page-break-inside:avoid}
   .page-strip{break-after:avoid;page-break-after:avoid}
 }
+/* ═══════ PAGE 4 — PROGRAM KPIs ═══════ */
+.p4{padding:0;background:#fafaf7}
+.p4-head{padding:3rem 3.5rem 1.5rem;text-align:center;background:linear-gradient(135deg,var(--navy-deep) 0%,var(--navy) 100%);color:#fff;border-bottom:2px solid var(--gold)}
+.p4-head .kicker{font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold-light);font-weight:700;margin-bottom:.8rem}
+.p4-head h2{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:#fff;font-weight:600;letter-spacing:.01em;line-height:1.15;margin-bottom:.6rem}
+.p4-head h2 .gold{color:var(--gold-light)}
+.p4-head p{font-size:.95rem;color:rgba(255,255,255,.75);max-width:720px;margin:0 auto;line-height:1.65}
+.p4-body{padding:2.5rem 3.5rem 3rem}
+
+.kpi-hero-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.2rem}
+.kpi-hero{background:#fff;border:1px solid var(--line);border-top:3px solid var(--gold);padding:1.4rem 1.2rem;border-radius:4px;box-shadow:var(--shadow-sm);position:relative}
+.kpi-hero .kh-k{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-weight:700;margin-bottom:.55rem}
+.kpi-hero .kh-v{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:var(--navy-deep);font-weight:700;line-height:1;letter-spacing:-.01em}
+.kpi-hero .kh-v small{font-family:'Montserrat',sans-serif;font-size:.9rem;color:var(--mute);font-weight:500;margin-left:.15rem;letter-spacing:.02em}
+.kpi-hero .kh-delta{margin-top:.5rem;font-size:.72rem;font-weight:600;letter-spacing:.03em;color:var(--success)}
+.kpi-hero .kh-delta.down{color:var(--danger)}
+.kpi-hero .kh-delta.flat{color:var(--mute)}
+
+.kpi-split{display:grid;grid-template-columns:1.55fr 1fr;gap:1.4rem;margin-bottom:2rem}
+.kpi-card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:1.5rem 1.6rem;box-shadow:var(--shadow-sm)}
+.kpi-card h4{font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.2rem}
+.kpi-card .kc-sub{font-size:.82rem;color:var(--mute);margin-bottom:1.1rem}
+.kpi-card .kc-foot{font-size:.76rem;color:var(--ink-soft);margin-top:.8rem;line-height:1.6}
+.kpi-card .kc-foot b{color:var(--navy-deep);font-weight:700}
+
+.progress-chart{width:100%;height:220px;display:block}
+.progress-chart .grid{stroke:rgba(52,57,77,.1);stroke-width:1}
+.progress-chart .axis{stroke:rgba(52,57,77,.35);stroke-width:1}
+.progress-chart .line-sessions{stroke:var(--gold);stroke-width:2.5;fill:none}
+.progress-chart .line-pass{stroke:var(--navy);stroke-width:2.5;stroke-dasharray:4 3;fill:none}
+.progress-chart .dot-s{fill:var(--gold)}
+.progress-chart .dot-p{fill:var(--navy)}
+.progress-chart .fill-area{fill:rgba(155,134,101,.08)}
+.progress-chart text{font-family:'Montserrat',sans-serif;fill:var(--mute);font-size:10px;letter-spacing:.03em}
+.progress-chart .y-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;fill:var(--mute);font-weight:600}
+.chart-legend{display:flex;gap:1.2rem;margin-top:.6rem;font-size:.74rem;color:var(--ink-soft);flex-wrap:wrap}
+.chart-legend span{display:inline-flex;align-items:center;gap:.4rem;font-weight:500}
+.chart-legend i{display:inline-block;width:20px;height:2px;background:var(--gold);border-radius:2px}
+.chart-legend i.pass{background:var(--navy);box-shadow:0 0 0 0}
+.chart-legend i.pass{background:repeating-linear-gradient(90deg,var(--navy) 0 4px,transparent 4px 7px)}
+
+.scen-bars{display:flex;flex-direction:column;gap:.75rem;margin-top:.4rem}
+.scen-row{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:center}
+.scen-row .scen-name{font-size:.82rem;color:var(--navy-deep);font-weight:600}
+.scen-row .scen-bar-wrap{grid-column:1/-1;height:10px;background:var(--panel);border-radius:6px;overflow:hidden;position:relative}
+.scen-row .scen-bar{height:100%;background:linear-gradient(90deg,var(--gold) 0%,var(--gold-light) 100%);border-radius:6px;transition:width .6s}
+.scen-row .scen-val{font-size:.78rem;color:var(--gold-dark);font-weight:700;letter-spacing:.02em}
+
+.kpi-secondary{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.ksec{background:#fff;border:1px solid var(--line);border-left:3px solid var(--gold);padding:1.1rem 1.2rem;border-radius:4px;box-shadow:var(--shadow-sm)}
+.ksec .k{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:700;margin-bottom:.3rem}
+.ksec .v{font-size:1.45rem;color:var(--navy-deep);font-weight:700;line-height:1.05}
+.ksec .v small{font-size:.75rem;color:var(--mute);font-weight:500;margin-left:.2rem}
+.ksec .n{font-size:.72rem;color:var(--ink-soft);margin-top:.4rem;line-height:1.5}
+
+.cohort-strip{background:linear-gradient(135deg,var(--panel-blue) 0%,#fff 100%);border-radius:4px;border:1px solid var(--line);padding:1.5rem 1.6rem;display:grid;grid-template-columns:auto 1fr;gap:1.6rem;align-items:center;margin-bottom:1.5rem}
+.cohort-strip .badge-n{font-family:'Cormorant Garamond',serif;font-size:3.4rem;color:var(--gold);font-weight:700;line-height:1;text-align:center;padding:0 1rem;border-right:1px solid rgba(155,134,101,.3)}
+html[dir="rtl"] .cohort-strip .badge-n{border-right:0;border-left:1px solid rgba(155,134,101,.3)}
+.cohort-strip .badge-n small{font-family:'Montserrat',sans-serif;font-size:.65rem;color:var(--mute);font-weight:700;letter-spacing:.2em;text-transform:uppercase;display:block;margin-top:.3rem}
+.cohort-strip .badge-text h4{font-size:1.05rem;color:var(--navy-deep);font-weight:700;margin-bottom:.3rem}
+.cohort-strip .badge-text p{font-size:.85rem;color:var(--ink-soft);line-height:1.65}
+
+@media (max-width:900px){
+  .page-nav{display:none}
+  .kpi-hero-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi-split{grid-template-columns:1fr}
+  .kpi-secondary{grid-template-columns:repeat(2,1fr)}
+}
 @media (max-width:800px){
-  .p1-body,.p3,.cert{padding:2.5rem 1.5rem 3rem}
-  .p1-hero{padding:4rem 1.5rem 2.5rem}
+  .p1-body,.p3,.cert,.p4-body{padding:2.5rem 1.5rem 3rem}
+  .p1-hero,.p4-head{padding:3rem 1.5rem 2rem}
   .pillars,.findings-grid,.meta-grid,.kpi-row,.component-mini,.first-row,.score-hero{grid-template-columns:1fr!important}
+  .p4-head h2{font-size:2rem}
+  .kpi-hero .kh-v{font-size:2.2rem}
+  .cohort-strip{grid-template-columns:1fr;gap:1rem;text-align:center}
+  .cohort-strip .badge-n{border-right:0!important;border-left:0!important;border-bottom:1px solid rgba(155,134,101,.3);padding:0 0 1rem}
+}
+@media (max-width:560px){
+  .chrome{padding:.6rem 1rem}
+  .brand-txt{display:none}
+  .ctrl button{padding:.38rem .6rem;font-size:.62rem}
+  .kpi-hero-grid{grid-template-columns:1fr 1fr;gap:.6rem}
+  .kpi-hero{padding:1rem .9rem}
+  .kpi-hero .kh-v{font-size:1.9rem}
+  .kpi-hero .kh-k{font-size:.56rem}
+  .kpi-secondary{grid-template-columns:1fr}
+  .p4-head h2{font-size:1.7rem}
+  .p4-head p{font-size:.85rem}
+  .p4-body{padding:2rem 1rem 2.5rem}
+  .kpi-card{padding:1.2rem 1.1rem}
+  .progress-chart{height:180px}
+  .pager{padding:.35rem .55rem;gap:.4rem}
+  .pager .arr{width:32px;height:32px}
+  .pager .dot{width:7px;height:7px}
+  .pager .dot.active{width:20px}
+  .pager .pcount{font-size:.65rem;padding:0 .4rem}
+  .page-strip{padding:.7rem 1rem}
+  .page-strip .strip-meta{gap:.9rem}
+  .page-strip .strip-label{font-size:.55rem;letter-spacing:.2em}
+  .page-strip .strip-value{font-size:.7rem}
+  .page{margin:.8rem auto;width:min(1180px,98vw)}
+  .p1-hero h1{font-size:1.6rem}
+  .p1-sub{font-size:.9rem}
+  .sect-title{font-size:.65rem}
+  .sect-lead{font-size:1.25rem}
+  .sect-body{font-size:.9rem}
+  .pillar{padding:1.3rem 1.2rem}
+  .pillar-num{font-size:2rem}
+  .pillar h4{font-size:.9rem}
+  .pillar p{font-size:.85rem}
+  .first-row{padding:1.5rem 1.2rem;gap:1.2rem}
+  .first-row h3{font-size:1.15rem}
+  .first-badge .num{font-size:3.5rem}
+  .cert{padding:2rem 1.2rem 2rem}
+  .cert-title{font-size:1.8rem}
+  .cert-sub{font-size:.8rem}
+  .cert-meta{gap:1rem;flex-wrap:wrap;font-size:.78rem}
+  .score-val .n{font-size:2.6rem}
+  .tbl{min-width:520px}
+  .tbl th,.tbl td{font-size:.72rem;padding:.55rem .5rem}
+  .p3{padding:2rem 1rem 2.5rem}
+  .p3-head h2{font-size:1.3rem;line-height:1.25}
+  .p3-head .k{font-size:.6rem}
+  .block{padding:1.1rem 1rem;margin-bottom:1.2rem}
+  .block-h h3{font-size:.95rem}
+  .kpi-row{gap:.6rem}
+  .kpi{padding:.85rem .9rem}
+  .kpi .v{font-size:1.3rem}
+  .kpi .k{font-size:.6rem}
+  .rec{padding:1rem 1rem}
+  .rec-h h4{font-size:.95rem}
+  .rec p{font-size:.8rem}
+  .footer-note{font-size:.68rem;padding:.9rem 1rem}
+  .quote{font-size:.82rem;padding:.9rem 1rem}
 }
 
 /* Password gate */
@@ -441,9 +572,10 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
     </div>
   </div>
   <nav class="page-nav">
-    <a data-slide="1" class="active"><span class="lang-en">01 · Solution</span><span class="lang-ar">01 · الحل</span></a>
+    <a data-slide="1" class="active"><span class="lang-en">01 · Introduction</span><span class="lang-ar">01 · المقدمة</span></a>
     <a data-slide="2"><span class="lang-en">02 · Certificate</span><span class="lang-ar">02 · الشهادة</span></a>
     <a data-slide="3"><span class="lang-en">03 · Detail</span><span class="lang-ar">03 · التفاصيل</span></a>
+    <a data-slide="4"><span class="lang-en">04 · Program KPIs</span><span class="lang-ar">04 · مؤشرات البرنامج</span></a>
   </nav>
   <div class="ctrl">
     <button id="langBtn" onclick="toggleLang()">العربية</button>
@@ -453,18 +585,18 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
 
 <div class="stage">
 
-<!-- ═══════ PAGE 1 — MCC SOLUTION OVERVIEW ═══════ -->
+<!-- ═══════ PAGE 1 — MCC INTRODUCTION ═══════ -->
 <section class="page p1 active" id="page1">
   <div class="page-strip">
     <div class="brand-mark"><img src="mcc-logo.svg" alt="Monitoring &amp; Control Center"></div>
     <div class="strip-meta">
       <div>
         <div class="strip-label"><span class="lang-en">Document</span><span class="lang-ar">المستند</span></div>
-        <div class="strip-value"><span class="lang-en">Solution Overview</span><span class="lang-ar">نظرة عامة على الحل</span></div>
+        <div class="strip-value"><span class="lang-en">Introduction</span><span class="lang-ar">المقدمة</span></div>
       </div>
       <div>
         <div class="strip-label"><span class="lang-en">Page</span><span class="lang-ar">الصفحة</span></div>
-        <div class="strip-value">01 / 03</div>
+        <div class="strip-value">01 / 04</div>
       </div>
     </div>
   </div>
@@ -572,7 +704,7 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
       </div>
       <div>
         <div class="strip-label"><span class="lang-en">Page</span><span class="lang-ar">الصفحة</span></div>
-        <div class="strip-value">02 / 03</div>
+        <div class="strip-value">02 / 04</div>
       </div>
     </div>
   </div>
@@ -685,7 +817,7 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
       </div>
       <div>
         <div class="strip-label"><span class="lang-en">Page</span><span class="lang-ar">الصفحة</span></div>
-        <div class="strip-value">03 / 03</div>
+        <div class="strip-value">03 / 04</div>
       </div>
     </div>
   </div>
@@ -881,6 +1013,219 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
 
 </section>
 
+<!-- ═══════ PAGE 4 — PROGRAM KPIs ═══════ -->
+<section class="page p4" id="page4">
+  <div class="page-strip">
+    <div class="brand-mark"><img src="mcc-logo.svg" alt="Monitoring &amp; Control Center"></div>
+    <div class="strip-meta">
+      <div>
+        <div class="strip-label"><span class="lang-en">Document</span><span class="lang-ar">المستند</span></div>
+        <div class="strip-value"><span class="lang-en">Program KPIs</span><span class="lang-ar">مؤشرات البرنامج</span></div>
+      </div>
+      <div>
+        <div class="strip-label"><span class="lang-en">Page</span><span class="lang-ar">الصفحة</span></div>
+        <div class="strip-value">04 / 04</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p4-head">
+    <div class="kicker"><span class="lang-en">Program Performance · YTD 2026</span><span class="lang-ar">أداء البرنامج · حتى تاريخه 2026</span></div>
+    <h2>
+      <span class="lang-en">Operator training <span class="gold">at scale.</span></span>
+      <span class="lang-ar">تدريب المشغلين <span class="gold">على نطاق واسع.</span></span>
+    </h2>
+    <p>
+      <span class="lang-en">A rolling view of how the MCC AI Performance platform is being used across cohorts, scenarios and time — the signals leadership tracks to measure readiness growth.</span>
+      <span class="lang-ar">نظرة متجدّدة على استخدام منصة أداء المشغلين بالذكاء الاصطناعي عبر الدفعات والسيناريوهات والزمن — الإشارات التي تتابعها القيادة لقياس نموّ الجاهزية.</span>
+    </p>
+  </div>
+
+  <div class="p4-body">
+
+    <!-- Hero KPI cards -->
+    <div class="kpi-hero-grid">
+      <div class="kpi-hero">
+        <div class="kh-k"><span class="lang-en">Trainees</span><span class="lang-ar">المتدربون</span></div>
+        <div class="kh-v">142</div>
+        <div class="kh-delta"><span class="lang-en">▲ 23 this quarter</span><span class="lang-ar">▲ 23 هذا الربع</span></div>
+      </div>
+      <div class="kpi-hero">
+        <div class="kh-k"><span class="lang-en">Sessions Run</span><span class="lang-ar">الجلسات المُنفّذة</span></div>
+        <div class="kh-v">1,284</div>
+        <div class="kh-delta"><span class="lang-en">▲ 18% vs Q1</span><span class="lang-ar">▲ 18% مقابل الربع الأول</span></div>
+      </div>
+      <div class="kpi-hero">
+        <div class="kh-k"><span class="lang-en">Training Hours</span><span class="lang-ar">ساعات التدريب</span></div>
+        <div class="kh-v">3,670<small>h</small></div>
+        <div class="kh-delta"><span class="lang-en">▲ 612h this quarter</span><span class="lang-ar">▲ 612س هذا الربع</span></div>
+      </div>
+      <div class="kpi-hero">
+        <div class="kh-k"><span class="lang-en">Average Composite</span><span class="lang-ar">متوسط الدرجة الإجمالية</span></div>
+        <div class="kh-v">68<small>/100</small></div>
+        <div class="kh-delta"><span class="lang-en">▲ +9 pts YTD</span><span class="lang-ar">▲ +9 نقاط حتى تاريخه</span></div>
+      </div>
+    </div>
+
+    <!-- Split: Progress chart + scenario breakdown -->
+    <div class="kpi-split">
+      <div class="kpi-card">
+        <h4><span class="lang-en">Progress Over Time</span><span class="lang-ar">التقدّم عبر الزمن</span></h4>
+        <div class="kc-sub"><span class="lang-en">Monthly sessions and average composite — last 8 months.</span><span class="lang-ar">عدد الجلسات ومتوسط الدرجة الإجمالية — آخر 8 أشهر.</span></div>
+        <svg class="progress-chart" viewBox="0 0 640 220" preserveAspectRatio="none" aria-label="Program progress chart">
+          <!-- Y axis grid -->
+          <line class="grid" x1="50" y1="30" x2="620" y2="30"/>
+          <line class="grid" x1="50" y1="70" x2="620" y2="70"/>
+          <line class="grid" x1="50" y1="110" x2="620" y2="110"/>
+          <line class="grid" x1="50" y1="150" x2="620" y2="150"/>
+          <line class="axis" x1="50" y1="190" x2="620" y2="190"/>
+          <!-- Y axis labels (sessions, left) -->
+          <text x="44" y="34" text-anchor="end">240</text>
+          <text x="44" y="74" text-anchor="end">180</text>
+          <text x="44" y="114" text-anchor="end">120</text>
+          <text x="44" y="154" text-anchor="end">60</text>
+          <text x="44" y="194" text-anchor="end">0</text>
+          <text class="y-lbl" x="20" y="22">Sessions</text>
+          <!-- Y axis labels (composite, right) -->
+          <text x="626" y="34" text-anchor="start">100</text>
+          <text x="626" y="74" text-anchor="start">80</text>
+          <text x="626" y="114" text-anchor="start">60</text>
+          <text x="626" y="154" text-anchor="start">40</text>
+          <text x="626" y="194" text-anchor="start">20</text>
+          <!-- Fill area under sessions -->
+          <path class="fill-area" d="M 70,158 L 150,142 L 230,128 L 310,106 L 390,92 L 470,74 L 550,60 L 610,46 L 610,190 L 70,190 Z"/>
+          <!-- Sessions line (values: 50, 75, 98, 130, 165, 190, 215, 238) -->
+          <polyline class="line-sessions" points="70,158 150,142 230,128 310,106 390,92 470,74 550,60 610,46"/>
+          <!-- Pass / composite line (values: 52, 56, 59, 63, 65, 67, 69, 71) -->
+          <polyline class="line-pass" points="70,126 150,118 230,112 310,104 390,100 470,96 550,92 610,84"/>
+          <!-- Dots -->
+          <circle class="dot-s" cx="70" cy="158" r="3"/>
+          <circle class="dot-s" cx="150" cy="142" r="3"/>
+          <circle class="dot-s" cx="230" cy="128" r="3"/>
+          <circle class="dot-s" cx="310" cy="106" r="3"/>
+          <circle class="dot-s" cx="390" cy="92" r="3"/>
+          <circle class="dot-s" cx="470" cy="74" r="3"/>
+          <circle class="dot-s" cx="550" cy="60" r="3"/>
+          <circle class="dot-s" cx="610" cy="46" r="3"/>
+          <circle class="dot-p" cx="70" cy="126" r="3"/>
+          <circle class="dot-p" cx="150" cy="118" r="3"/>
+          <circle class="dot-p" cx="230" cy="112" r="3"/>
+          <circle class="dot-p" cx="310" cy="104" r="3"/>
+          <circle class="dot-p" cx="390" cy="100" r="3"/>
+          <circle class="dot-p" cx="470" cy="96" r="3"/>
+          <circle class="dot-p" cx="550" cy="92" r="3"/>
+          <circle class="dot-p" cx="610" cy="84" r="3"/>
+          <!-- X labels -->
+          <text x="70" y="208" text-anchor="middle">Sep</text>
+          <text x="150" y="208" text-anchor="middle">Oct</text>
+          <text x="230" y="208" text-anchor="middle">Nov</text>
+          <text x="310" y="208" text-anchor="middle">Dec</text>
+          <text x="390" y="208" text-anchor="middle">Jan</text>
+          <text x="470" y="208" text-anchor="middle">Feb</text>
+          <text x="550" y="208" text-anchor="middle">Mar</text>
+          <text x="610" y="208" text-anchor="middle">Apr</text>
+        </svg>
+        <div class="chart-legend">
+          <span><i></i><span class="lang-en">Sessions / month</span><span class="lang-ar">الجلسات/الشهر</span></span>
+          <span><i class="pass"></i><span class="lang-en">Avg. composite score</span><span class="lang-ar">متوسط الدرجة</span></span>
+        </div>
+        <div class="kc-foot">
+          <span class="lang-en"><b>Trend:</b> Program volume is up 4.8× since September. Composite score has climbed from 52 to 71, signalling that additional sessions are driving real capability — not just throughput.</span>
+          <span class="lang-ar"><b>الاتجاه:</b> حجم البرنامج ارتفع 4.8 أضعاف منذ سبتمبر. متوسط الدرجة ارتفع من 52 إلى 71 — مؤشر على أن ازدياد الجلسات يُنتج قدرة حقيقية لا حجماً فقط.</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <h4><span class="lang-en">Top Scenarios</span><span class="lang-ar">السيناريوهات الأعلى استخداماً</span></h4>
+        <div class="kc-sub"><span class="lang-en">Sessions delivered per scenario — YTD.</span><span class="lang-ar">الجلسات المُنفّذة حسب السيناريو — حتى تاريخه.</span></div>
+        <div class="scen-bars">
+          <div class="scen-row">
+            <div class="scen-name"><span class="lang-en">Airport · Suspicious Item</span><span class="lang-ar">مطار · جسم مشبوه</span></div>
+            <div class="scen-val">412</div>
+            <div class="scen-bar-wrap"><div class="scen-bar" style="width:96%"></div></div>
+          </div>
+          <div class="scen-row">
+            <div class="scen-name"><span class="lang-en">Stadium · Crowd Surge</span><span class="lang-ar">ملعب · تدافع جمهور</span></div>
+            <div class="scen-val">298</div>
+            <div class="scen-bar-wrap"><div class="scen-bar" style="width:70%"></div></div>
+          </div>
+          <div class="scen-row">
+            <div class="scen-name"><span class="lang-en">Metro · Platform Incident</span><span class="lang-ar">مترو · حادثة على الرصيف</span></div>
+            <div class="scen-val">236</div>
+            <div class="scen-bar-wrap"><div class="scen-bar" style="width:56%"></div></div>
+          </div>
+          <div class="scen-row">
+            <div class="scen-name"><span class="lang-en">Seaport · Perimeter Breach</span><span class="lang-ar">ميناء · اختراق محيط</span></div>
+            <div class="scen-val">184</div>
+            <div class="scen-bar-wrap"><div class="scen-bar" style="width:44%"></div></div>
+          </div>
+          <div class="scen-row">
+            <div class="scen-name"><span class="lang-en">Hotel · VIP Protection</span><span class="lang-ar">فندق · حماية شخصية</span></div>
+            <div class="scen-val">98</div>
+            <div class="scen-bar-wrap"><div class="scen-bar" style="width:24%"></div></div>
+          </div>
+          <div class="scen-row">
+            <div class="scen-name"><span class="lang-en">Hospital · Restricted Access</span><span class="lang-ar">مستشفى · مناطق مقيّدة</span></div>
+            <div class="scen-val">56</div>
+            <div class="scen-bar-wrap"><div class="scen-bar" style="width:14%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary KPIs -->
+    <div class="kpi-secondary">
+      <div class="ksec">
+        <div class="k"><span class="lang-en">Pass Rate</span><span class="lang-ar">نسبة النجاح</span></div>
+        <div class="v">64<small>%</small></div>
+        <div class="n"><span class="lang-en">Composite ≥ 60 across all sessions YTD.</span><span class="lang-ar">الدرجة الإجمالية ≥ 60 في جميع الجلسات حتى تاريخه.</span></div>
+      </div>
+      <div class="ksec">
+        <div class="k"><span class="lang-en">Active Operators</span><span class="lang-ar">المشغلون النشطون</span></div>
+        <div class="v">118<small>/142</small></div>
+        <div class="n"><span class="lang-en">At least one session in the last 30 days.</span><span class="lang-ar">لديهم جلسة واحدة على الأقل خلال آخر 30 يوماً.</span></div>
+      </div>
+      <div class="ksec">
+        <div class="k"><span class="lang-en">Biometric Capture</span><span class="lang-ar">التقاط القياس الحيوي</span></div>
+        <div class="v">97<small>%</small></div>
+        <div class="n"><span class="lang-en">Sessions with full HR · EDA · gaze streams.</span><span class="lang-ar">جلسات بتغطية كاملة للنبض والنشاط الكهربائي للجلد والنظر.</span></div>
+      </div>
+      <div class="ksec">
+        <div class="k"><span class="lang-en">AI Reports Generated</span><span class="lang-ar">تقارير الذكاء المُصدَرة</span></div>
+        <div class="v">1,284</div>
+        <div class="n"><span class="lang-en">One per session · avg. 58s turnaround.</span><span class="lang-ar">تقرير لكل جلسة · بمعدّل 58 ثانية لإصداره.</span></div>
+      </div>
+      <div class="ksec">
+        <div class="k"><span class="lang-en">Supervisor Reviews</span><span class="lang-ar">مراجعات المشرفين</span></div>
+        <div class="v">812</div>
+        <div class="n"><span class="lang-en">AI-assisted reviews closed within 24h.</span><span class="lang-ar">مراجعات مدعومة بالذكاء الاصطناعي أُنجزت خلال 24 ساعة.</span></div>
+      </div>
+      <div class="ksec">
+        <div class="k"><span class="lang-en">Cohorts Onboarded</span><span class="lang-ar">الدفعات المُلتحقة</span></div>
+        <div class="v">9</div>
+        <div class="n"><span class="lang-en">Across 3 directorates · 2 partner agencies.</span><span class="lang-ar">موزّعة على 3 إدارات · جهتين شريكتين.</span></div>
+      </div>
+    </div>
+
+    <!-- Cohort highlight -->
+    <div class="cohort-strip">
+      <div class="badge-n">
+        +19<small><span class="lang-en">pts</span><span class="lang-ar">نقطة</span></small>
+      </div>
+      <div class="badge-text">
+        <h4><span class="lang-en">Average operator improvement between session 1 and session 10</span><span class="lang-ar">متوسط تحسّن المشغل بين الجلسة الأولى والجلسة العاشرة</span></h4>
+        <p><span class="lang-en">Tracked across the 68 operators who completed a full 10-session arc. The biggest lifts came from Attention &amp; Gaze (+27 pts) and Timeliness (+22 pts) — the dimensions most responsive to structured VR repetition with biometric feedback.</span><span class="lang-ar">متابعة شملت 68 مشغلاً أكملوا مساراً من 10 جلسات. أكبر القفزات جاءت في التركيز والنظر (+27 نقطة) والسرعة (+22 نقطة) — أكثر المحاور استجابة للتكرار المنظّم في الواقع الافتراضي مع التغذية الحيوية.</span></p>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <span class="lang-en">MCC Operator Performance System · Confidential · Rolling KPIs — refreshed nightly</span>
+      <span class="lang-ar">نظام أداء المشغلين · سرّي · مؤشرات متجدّدة ليلياً</span>
+    </div>
+
+  </div>
+</section>
+
 </div>
 
 <!-- Bottom pager -->
@@ -890,8 +1235,9 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
     <button class="dot active" data-slide="1" aria-label="Page 1"></button>
     <button class="dot" data-slide="2" aria-label="Page 2"></button>
     <button class="dot" data-slide="3" aria-label="Page 3"></button>
+    <button class="dot" data-slide="4" aria-label="Page 4"></button>
   </div>
-  <div class="pcount"><span id="pIdx">01</span> / 03</div>
+  <div class="pcount"><span id="pIdx">01</span> / 04</div>
   <button class="arr" id="nextBtn" aria-label="Next">›</button>
 </div>
 
