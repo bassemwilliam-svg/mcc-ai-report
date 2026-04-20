@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCC · AI Performance Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700;800&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#9B8665; --gold-light:#BAAC98; --gold-dark:#7E6C4F;
+  --navy:#34394D; --navy-deep:#252C39; --navy-soft:#384050;
+  --ink:#212529; --ink-soft:#4A4F57; --mute:#6B6F78;
+  --line:#E3E5EA; --panel:#F0F0F0; --panel-blue:#EBEEF6;
+  --white:#FFFFFF; --success:#2E8B57; --warning:#C48A27; --danger:#B54442;
+  --gold-grad:radial-gradient(120.83% 120.83% at 0% 0%, #9B8665 0%, #BAAC98 100%);
+  --shadow-sm:0 2px 10px rgba(52,57,77,0.06);
+  --shadow-md:0 6px 28px rgba(52,57,77,0.10);
+  --shadow-lg:0 20px 60px rgba(52,57,77,0.14);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:'Montserrat',sans-serif;background:var(--panel);color:var(--ink);line-height:1.65}
+html[lang="ar"] body{font-family:'Tajawal','Montserrat',sans-serif}
+html[dir="rtl"] body{text-align:right}
+.lang-ar{display:none}
+html[lang="ar"] .lang-en{display:none}
+html[lang="ar"] .lang-ar{display:inline}
+html[lang="ar"] .lang-ar.block{display:block}
+
+/* Top chrome */
+.chrome{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:linear-gradient(135deg,rgba(37,44,57,0.97) 0%,rgba(52,57,77,0.97) 100%);
+  backdrop-filter:blur(14px);
+  box-shadow:0 8px 28px rgba(0,0,0,0.25),inset 0 -1px 0 rgba(155,134,101,0.3);
+  padding:0.7rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;color:#fff;
+}
+.brand{display:flex;align-items:center;gap:.85rem}
+.brand-mark{display:inline-flex;align-items:center;height:32px;flex-shrink:0}
+.brand-mark img{height:100%;width:auto;display:block}
+.brand-txt{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-light);font-weight:600;line-height:1.2}
+.brand-txt b{display:block;color:#fff;font-size:.78rem;letter-spacing:.12em;margin-top:2px}
+.page-nav{display:flex;gap:.4rem}
+.page-nav a{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:.45rem .9rem;border-radius:4px;color:#fff;font-weight:500;transition:.2s;cursor:pointer}
+.page-nav a:hover,.page-nav a.active{color:var(--gold);background:rgba(155,134,101,.12)}
+.ctrl{display:flex;gap:.55rem;align-items:center}
+.ctrl button{font-size:.72rem;letter-spacing:.1em;padding:.48rem .9rem;border:1px solid currentColor;border-radius:4px;background:transparent;color:#fff;cursor:pointer;font-weight:600;text-transform:uppercase;transition:.2s;font-family:inherit}
+.ctrl button.primary{background:var(--gold);border-color:var(--gold)}
+.ctrl button:hover{background:var(--gold);border-color:var(--gold)}
+.ctrl button.primary:hover{background:var(--gold-dark);border-color:var(--gold-dark)}
+@media (max-width:900px){.page-nav{display:none}}
+
+/* ─── Slide stage (one page at a time) ─── */
+.stage{padding-top:64px;min-height:100vh;display:flex;align-items:stretch;justify-content:center}
+.page{
+  width:min(1180px,96vw);
+  margin:2.2rem auto;
+  background:#fff;
+  box-shadow:var(--shadow-lg);
+  border-radius:6px;
+  position:relative;
+  overflow:hidden;
+  display:none;
+  animation:slideIn .45s ease both;
+}
+.page.active{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Branded header strip on every page */
+.page-strip{
+  background:linear-gradient(107deg,var(--navy-deep) 0%,var(--navy) 100%);
+  color:#fff;
+  padding:1rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  border-bottom:2px solid var(--gold);
+  position:relative;
+}
+.page-strip::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+.page-strip .brand-mark{height:36px}
+.page-strip .strip-meta{display:flex;align-items:center;gap:1.5rem}
+.page-strip .strip-meta > div{text-align:right}
+html[dir="rtl"] .page-strip .strip-meta > div{text-align:left}
+.page-strip .strip-label{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-light);font-weight:600}
+.page-strip .strip-value{font-size:.8rem;font-weight:600;color:#fff;letter-spacing:.05em;margin-top:1px}
+.page-label{position:absolute;top:50%;transform:translateY(-50%);right:2rem;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-light);font-weight:700;z-index:2}
+html[dir="rtl"] .page-label{right:auto;left:2rem}
+
+/* Bottom pager (prev/next/dots) */
+.pager{
+  position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:900;
+  background:linear-gradient(135deg,rgba(37,44,57,0.96) 0%,rgba(52,57,77,0.96) 100%);
+  box-shadow:0 8px 28px rgba(0,0,0,0.25),inset 0 -1px 0 rgba(155,134,101,0.25);
+  border-radius:40px;padding:.5rem .8rem;display:flex;align-items:center;gap:.7rem;
+}
+.pager .arr{
+  width:36px;height:36px;border-radius:50%;
+  background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;
+  display:grid;place-items:center;cursor:pointer;font-family:inherit;transition:.2s;
+}
+.pager .arr:hover:not(:disabled){background:var(--gold);border-color:var(--gold)}
+.pager .arr:disabled{opacity:.3;cursor:not-allowed}
+.pager .dots{display:flex;gap:.5rem;align-items:center;padding:0 .4rem}
+.pager .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:.2s;border:0;padding:0}
+.pager .dot.active{background:var(--gold);box-shadow:0 0 0 3px rgba(155,134,101,.25);width:24px;border-radius:4px}
+.pager .pcount{color:#fff;font-size:.72rem;letter-spacing:.15em;padding:0 .6rem;font-weight:600}
+
+/* ─────────── PAGE 1 — Overview ─────────── */
+.p1{padding:0}
+.p1-hero{
+  position:relative;padding:5rem 4rem 3.5rem;color:#fff;
+  background:linear-gradient(107deg,var(--navy-deep) 0%,var(--navy) 60%,var(--navy-soft) 100%);
+  overflow:hidden;
+}
+.p1-hero::after{
+  content:"";position:absolute;inset:0;opacity:.08;pointer-events:none;
+  background-image:
+    linear-gradient(30deg,transparent 49%,var(--gold) 49%,var(--gold) 51%,transparent 51%),
+    linear-gradient(150deg,transparent 49%,var(--gold) 49%,var(--gold) 51%,transparent 51%);
+  background-size:40px 70px;
+}
+.p1-eyebrow{display:inline-block;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-light);padding:.5rem 1.1rem;border:1px solid rgba(186,172,152,.5);border-radius:4px;margin-bottom:1.6rem;font-weight:600;background:rgba(0,0,0,.2);position:relative;z-index:1}
+.p1-hero h1{font-size:clamp(2rem,3.8vw,3.2rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;margin-bottom:1.2rem;position:relative;z-index:1;max-width:900px}
+html[lang="ar"] .p1-hero h1{letter-spacing:0;line-height:1.3}
+.p1-hero h1 .gold{color:var(--gold-light)}
+.p1-sub{font-size:1.08rem;color:rgba(255,255,255,.85);max-width:780px;line-height:1.7;position:relative;z-index:1}
+
+.p1-body{padding:3.5rem 4rem 4rem}
+.sect-title{font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.8rem}
+.sect-lead{font-size:1.65rem;font-weight:600;color:var(--navy-deep);line-height:1.25;margin-bottom:1.2rem;letter-spacing:-.01em}
+html[lang="ar"] .sect-lead{line-height:1.4}
+.sect-body{color:var(--ink-soft);font-size:1.02rem;max-width:900px;margin-bottom:2.5rem}
+.divider-hex{
+  height:40px;margin:2.5rem 0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='34' viewBox='0 0 60 34'><polygon fill='none' stroke='%239B8665' stroke-width='0.6' points='15,1 45,1 59,17 45,33 15,33 1,17'/></svg>");
+  background-repeat:repeat-x;background-position:center;opacity:.5;
+}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem}
+.pillar{background:#fff;border:1px solid var(--line);border-top:3px solid var(--gold);padding:1.8rem 1.6rem;border-radius:4px;box-shadow:var(--shadow-sm);transition:.25s}
+.pillar:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.pillar-num{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:var(--gold);font-weight:600;line-height:1;margin-bottom:.4rem}
+.pillar h4{font-size:1rem;font-weight:700;color:var(--navy-deep);margin-bottom:.7rem;letter-spacing:.01em}
+.pillar p{font-size:.92rem;color:var(--ink-soft);line-height:1.6}
+.p1-visual{margin:0;background:#0a0d16;padding:2rem 4rem 1.2rem;text-align:center}
+.p1-visual img{display:block;width:100%;max-width:1040px;height:auto;margin:0 auto;border-radius:4px;box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+.p1-visual .caption{max-width:1040px;margin:1rem auto 0;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.p1-visual .caption .label{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-light);font-weight:700}
+.p1-visual .caption .txt{font-size:.78rem;color:rgba(255,255,255,.75);font-weight:500}
+
+.first-row{display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center;background:var(--panel-blue);padding:2.5rem;border-radius:4px;margin-bottom:2.5rem;border-left:4px solid var(--gold)}
+html[dir="rtl"] .first-row{border-left:none;border-right:4px solid var(--gold)}
+.first-row h3{font-size:1.4rem;color:var(--navy-deep);font-weight:700;margin-bottom:1rem;line-height:1.3}
+.first-row p{color:var(--ink-soft);font-size:.98rem;margin-bottom:.8rem}
+.first-badge{text-align:center;padding:1.5rem}
+.first-badge .num{font-family:'Cormorant Garamond',serif;font-size:5rem;color:var(--gold);font-weight:700;line-height:1}
+.first-badge .lbl{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-top:.4rem}
+.why-list{list-style:none;margin-top:1rem}
+.why-list li{padding:.5rem 0 .5rem 1.8rem;font-size:.95rem;color:var(--ink-soft);position:relative}
+html[dir="rtl"] .why-list li{padding:.5rem 1.8rem .5rem 0}
+.why-list li::before{content:"◆";position:absolute;left:0;top:.5rem;color:var(--gold);font-size:.7rem}
+html[dir="rtl"] .why-list li::before{left:auto;right:0}
+
+/* ─────────── PAGE 2 — Certificate ─────────── */
+.p2{padding:0;background:#fafaf7}
+.cert{position:relative;padding:4rem 3.5rem 3rem;border:1px solid var(--line)}
+.cert::before,.cert::after{content:"";position:absolute;pointer-events:none}
+.cert::before{inset:1.2rem;border:1px solid rgba(155,134,101,.35);border-radius:2px}
+.cert::after{inset:1.8rem;border:1px dashed rgba(155,134,101,.2)}
+.cert-head{text-align:center;position:relative;z-index:1;margin-bottom:2rem}
+.cert-crest{width:80px;height:80px;margin:0 auto 1.2rem;background:var(--gold-grad);border-radius:50%;display:grid;place-items:center;box-shadow:0 8px 24px rgba(155,134,101,.4);position:relative}
+.cert-crest::after{content:"";position:absolute;inset:-6px;border:1px solid var(--gold);border-radius:50%;opacity:.5}
+.cert-crest span{color:#fff;font-weight:800;letter-spacing:.1em;font-size:.95rem}
+.cert-kicker{font-size:.72rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.8rem}
+.cert-title{font-family:'Cormorant Garamond',serif;font-size:2.8rem;color:var(--navy-deep);font-weight:600;letter-spacing:.01em;line-height:1.1;margin-bottom:.6rem}
+html[lang="ar"] .cert-title{font-family:'Tajawal',sans-serif;font-weight:700;font-size:2.2rem}
+.cert-sub{font-size:.9rem;color:var(--ink-soft);letter-spacing:.05em}
+.cert-meta{display:flex;justify-content:center;gap:2.5rem;margin:1.4rem 0 2rem;padding:1rem 0;border-top:1px solid rgba(155,134,101,.25);border-bottom:1px solid rgba(155,134,101,.25);position:relative;z-index:1}
+.cert-meta > div{text-align:center}
+.cert-meta .k{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-bottom:.25rem}
+.cert-meta .v{font-size:.9rem;font-weight:600;color:var(--navy-deep)}
+
+.score-hero{display:grid;grid-template-columns:280px 1fr;gap:2.5rem;align-items:center;padding:2rem;background:#fff;border-radius:6px;box-shadow:var(--shadow-sm);position:relative;z-index:1;margin-bottom:2rem}
+.score-ring{position:relative;width:240px;height:240px;margin:0 auto}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .track{fill:none;stroke:var(--line);stroke-width:14}
+.score-ring .fill{fill:none;stroke:url(#goldGrad);stroke-width:14;stroke-linecap:round;stroke-dasharray:691.15;stroke-dashoffset:calc(691.15 - (691.15 * 47)/100)}
+.score-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-val .n{font-family:'Cormorant Garamond',serif;font-size:4.2rem;font-weight:700;color:var(--navy-deep);line-height:1}
+.score-val .o{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-top:.2rem}
+.score-val .v{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--danger);margin-top:.5rem;padding:.2rem .6rem;background:rgba(181,68,66,.08);border:1px solid rgba(181,68,66,.3);border-radius:3px}
+.score-verdict h3{font-size:1.35rem;color:var(--navy-deep);font-weight:700;margin-bottom:.8rem;letter-spacing:-.005em}
+.score-verdict p{font-size:.95rem;color:var(--ink-soft);margin-bottom:.7rem}
+.component-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-top:1rem}
+.comp{padding:.7rem .85rem;background:var(--panel);border-radius:3px;border-left:3px solid var(--gold)}
+html[dir="rtl"] .comp{border-left:none;border-right:3px solid var(--gold)}
+.comp .lbl{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-bottom:.2rem}
+.comp .val{font-size:1.15rem;font-weight:700;color:var(--navy-deep)}
+.comp .val span{font-size:.7rem;color:var(--mute);font-weight:500;margin-left:.2rem}
+.comp.ok{border-left-color:var(--success)}
+.comp.bad{border-left-color:var(--danger)}
+.comp.warn{border-left-color:var(--warning)}
+html[dir="rtl"] .comp.ok{border-right-color:var(--success);border-left-color:transparent}
+html[dir="rtl"] .comp.bad{border-right-color:var(--danger);border-left-color:transparent}
+html[dir="rtl"] .comp.warn{border-right-color:var(--warning);border-left-color:transparent}
+
+.findings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;position:relative;z-index:1;margin-bottom:2rem}
+.find{background:#fff;padding:1.4rem;border-radius:4px;border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.find-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem}
+.find-h .tag{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;padding:.22rem .55rem;border-radius:2px;font-weight:700}
+.tag.high{background:rgba(181,68,66,.1);color:var(--danger);border:1px solid rgba(181,68,66,.3)}
+.tag.med{background:rgba(196,138,39,.1);color:var(--warning);border:1px solid rgba(196,138,39,.3)}
+.tag.low{background:rgba(46,139,87,.08);color:var(--success);border:1px solid rgba(46,139,87,.3)}
+.tag.strength{background:rgba(46,139,87,.1);color:var(--success);border:1px solid rgba(46,139,87,.3)}
+.find-h h4{font-size:1rem;color:var(--navy-deep);font-weight:700;flex:1}
+.find p{font-size:.88rem;color:var(--ink-soft);line-height:1.55}
+.find .evid{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.78rem;color:var(--mute);display:flex;flex-wrap:wrap;gap:.3rem .9rem}
+.find .evid b{color:var(--navy)}
+
+.cert-sign{display:flex;justify-content:space-between;align-items:flex-end;margin-top:2rem;position:relative;z-index:1;padding-top:1.5rem;border-top:1px solid rgba(155,134,101,.25)}
+.sign-block{text-align:center;flex:1}
+.sign-block .line{border-top:1px solid var(--navy);width:60%;margin:2rem auto .4rem}
+.sign-block .nm{font-size:.85rem;font-weight:700;color:var(--navy-deep)}
+.sign-block .rl{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-top:.2rem}
+.seal{width:90px;height:90px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;text-align:center;transform:rotate(-8deg);line-height:1.3;padding:.8rem}
+
+/* ─────────── PAGE 3 — Detail ─────────── */
+.p3{padding:3.5rem 3.5rem 4rem}
+.p3-head{border-bottom:2px solid var(--gold);padding-bottom:1.5rem;margin-bottom:2.5rem}
+.p3-head .k{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.5rem}
+.p3-head h2{font-size:2rem;color:var(--navy-deep);font-weight:700;letter-spacing:-.01em}
+.meta-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2.5rem}
+.meta-tile{padding:.9rem 1rem;background:var(--panel);border-radius:3px}
+.meta-tile .k{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-bottom:.25rem}
+.meta-tile .v{font-size:.92rem;color:var(--navy-deep);font-weight:600}
+
+.block{margin-bottom:2.5rem}
+.block-h{display:flex;align-items:center;gap:.8rem;margin-bottom:1.1rem;padding-bottom:.6rem;border-bottom:1px solid var(--line)}
+.block-h .dot{width:8px;height:8px;background:var(--gold);border-radius:50%}
+.block-h h3{font-size:1.1rem;color:var(--navy-deep);font-weight:700;letter-spacing:.01em}
+.block-h .n{font-size:.7rem;color:var(--mute);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-left:auto}
+html[dir="rtl"] .block-h .n{margin-left:0;margin-right:auto}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.tbl th{text-align:left;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-weight:700;padding:.6rem .7rem;border-bottom:2px solid var(--line);background:var(--panel)}
+html[dir="rtl"] .tbl th{text-align:right}
+.tbl td{padding:.65rem .7rem;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top}
+.tbl tr:hover td{background:#fbfaf7}
+.tbl .pill{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .5rem;border-radius:2px}
+.pill-ok{background:rgba(46,139,87,.1);color:var(--success)}
+.pill-del{background:rgba(196,138,39,.1);color:var(--warning)}
+.pill-miss{background:rgba(181,68,66,.1);color:var(--danger)}
+.pill-pro{background:rgba(52,57,77,.08);color:var(--navy)}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1rem}
+.kpi{background:var(--panel-blue);padding:1rem 1.1rem;border-radius:3px;border-left:3px solid var(--navy)}
+html[dir="rtl"] .kpi{border-left:none;border-right:3px solid var(--navy)}
+.kpi .k{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-bottom:.3rem}
+.kpi .v{font-size:1.35rem;font-weight:700;color:var(--navy-deep)}
+.kpi .v small{font-size:.7rem;color:var(--mute);font-weight:500;letter-spacing:.05em}
+
+.rec{background:#fff;border:1px solid var(--line);border-left:3px solid var(--gold);padding:1.2rem 1.4rem;border-radius:3px;margin-bottom:1rem}
+html[dir="rtl"] .rec{border-left:1px solid var(--line);border-right:3px solid var(--gold)}
+.rec-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.rec-h h4{font-size:.98rem;color:var(--navy-deep);font-weight:700;flex:1}
+.rec p{font-size:.88rem;color:var(--ink-soft);margin:.35rem 0}
+.rec .label{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-top:.6rem}
+
+.quote{background:var(--panel);padding:1.2rem 1.4rem;border-left:3px solid var(--gold);border-radius:3px;font-size:.92rem;color:var(--ink-soft);font-style:italic;line-height:1.65}
+html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-style:normal}
+
+.footer-note{text-align:center;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);padding:2rem;font-weight:600}
+
+/* Print — show all pages, one per sheet */
+@media print{
+  body{background:#fff}
+  .chrome,.pager{display:none!important}
+  .stage{padding:0;display:block}
+  .page{display:block!important;box-shadow:none;margin:0;page-break-after:always;width:100%;border-radius:0}
+  .page:last-child{page-break-after:auto}
+  .page-strip{position:static}
+}
+@media (max-width:800px){
+  .p1-body,.p3,.cert{padding:2.5rem 1.5rem 3rem}
+  .p1-hero{padding:4rem 1.5rem 2.5rem}
+  .pillars,.findings-grid,.meta-grid,.kpi-row,.component-mini,.first-row,.score-hero{grid-template-columns:1fr!important}
+}
+
+/* Password gate */
+.pw-gate{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,var(--navy-deep) 0%,var(--navy) 100%);display:grid;place-items:center;transition:opacity .4s}
+.pw-gate.hidden{opacity:0;pointer-events:none}
+.pw-box{text-align:center;padding:2rem;color:#fff;max-width:420px}
+.pw-box .brand-mark{margin:0 auto 1.5rem;height:52px;justify-content:center}
+.pw-box .brand-mark img{height:100%;width:auto}
+.pw-box h2{color:#fff;font-size:1.1rem;letter-spacing:.2em;text-transform:uppercase;margin:1rem 0 .3rem;font-weight:600}
+.pw-box p{font-size:.78rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2rem}
+.pw-input-row{display:flex;gap:.5rem}
+.pw-input-row input{flex:1;padding:.8rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;font-family:inherit;outline:none;letter-spacing:.1em}
+.pw-input-row input:focus{border-color:var(--gold);background:rgba(255,255,255,.12)}
+.pw-input-row button{padding:.8rem 1.5rem;background:var(--gold);color:#fff;border:none;border-radius:6px;font-family:inherit;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-size:.8rem}
+.pw-err{color:var(--danger);font-size:.8rem;margin-top:1rem;min-height:1em;letter-spacing:.05em}
+</style>
+</head>
+<body>
+
+<!-- ═══════ PASSWORD GATE ═══════ -->
+<div class="pw-gate" id="pwGate">
+  <div class="pw-box">
+    <div class="brand-mark"><img src="mcc-logo.svg" alt="Monitoring &amp; Control Center"></div>
+    <h2><span class="lang-en">Confidential Document</span><span class="lang-ar">وثيقة سرية</span></h2>
+    <p><span class="lang-en">Authorized Personnel Only</span><span class="lang-ar">للأشخاص المصرّح لهم فقط</span></p>
+    <div class="pw-input-row">
+      <input type="password" id="pwInput" placeholder="Access Code · رمز الدخول" autocomplete="off" autofocus>
+      <button onclick="checkPassword()"><span class="lang-en">Enter</span><span class="lang-ar">دخول</span></button>
+    </div>
+    <div class="pw-err" id="pwErr"></div>
+  </div>
+</div>
+
+<!-- ═══════ CHROME ═══════ -->
+<header class="chrome">
+  <div class="brand">
+    <div class="brand-mark"><img src="mcc-logo.svg" alt="Monitoring &amp; Control Center"></div>
+    <div class="brand-txt">
+      <span class="lang-en">Monitoring &amp; Control Center</span>
+      <span class="lang-ar">مركز الرقابة والتحكم</span>
+      <b><span class="lang-en">AI Performance Report</span><span class="lang-ar">تقرير الأداء بالذكاء الاصطناعي</span></b>
+    </div>
+  </div>
+  <nav class="page-nav">
+    <a data-slide="1" class="active"><span class="lang-en">01 · Solution</span><span class="lang-ar">01 · الحل</span></a>
+    <a data-slide="2"><span class="lang-en">02 · Certificate</span><span class="lang-ar">02 · الشهادة</span></a>
+    <a data-slide="3"><span class="lang-en">03 · Detail</span><span class="lang-ar">03 · التفاصيل</span></a>
+  </nav>
+  <div class="ctrl">
+    <button id="langBtn" onclick="toggleLang()">العربية</button>
+    <button class="primary" onclick="window.print()"><span class="lang-en">Print / PDF</span><span class="lang-ar">طباعة</span></button>
+  </div>
+</header>
+
+<div class="stage">
+
+<!-- ═══════ PAGE 1 — MCC SOLUTION OVERVIEW ═══════ -->
+<section class="page p1 active" id="page1">
+  <div class="page-strip">
+    <div class="brand-mark"><img src="mcc-logo.svg" alt="Monitoring &amp; Control Center"></div>
+    <div class="strip-meta">
+      <div>
+        <div class="strip-label"><span class="lang-en">Document</span><span class="lang-ar">المستند</span></div>
+        <div class="strip-value"><span class="lang-en">Solution Overview</span><span class="lang-ar">نظرة عامة على الحل</span></div>
+      </div>
+      <div>
+        <div class="strip-label"><span class="lang-en">Page</span><span class="lang-ar">الصفحة</span></div>
+        <div class="strip-value">01 / 03</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p1-hero">
+    <div class="p1-eyebrow">
+      <span class="lang-en">MCC Phase 2 · VR · Biometrics · AI</span>
+      <span class="lang-ar">المرحلة الثانية · واقع افتراضي · قياس حيوي · ذكاء اصطناعي</span>
+    </div>
+    <h1>
+      <span class="lang-en">A <span class="gold">first-of-its-kind</span> platform — pairing immersive VR simulation with biometric wearables and an AI reporting engine.</span>
+      <span class="lang-ar">منصة <span class="gold">الأولى من نوعها</span> — تجمع بين محاكاة الواقع الافتراضي الغامرة وأجهزة القياس الحيوي ومحرك تقارير مدعوم بالذكاء الاصطناعي.</span>
+    </h1>
+    <p class="p1-sub">
+      <span class="lang-en">Operators train inside hyper-realistic VR scenarios while wearable sensors capture heart rate, electrodermal activity and gaze in real time. Our AI fuses every signal — action, attention, physiology — into a single command-grade report that decision-makers can read in minutes, not weeks.</span>
+      <span class="lang-ar">يتدرّب المشغلون داخل سيناريوهات واقع افتراضي شديدة الواقعية، بينما تلتقط الأجهزة القابلة للارتداء نبض القلب والنشاط الكهربائي للجلد ومسار النظر بشكل فوري. يدمج ذكاؤنا الاصطناعي كل هذه الإشارات — التحرّك، والتركيز، والفسيولوجيا — في تقرير واحد بمستوى القيادة يُقرأ خلال دقائق لا أسابيع.</span>
+    </p>
+  </div>
+
+  <div class="p1-visual">
+    <img src="visuals/MCC%20iso.png" alt="MCC training room — operators in VR with supervisor console">
+    <div class="caption">
+      <div class="label"><span class="lang-en">MCC Training Facility · Live Session</span><span class="lang-ar">منشأة تدريب المركز · جلسة مباشرة</span></div>
+      <div class="txt"><span class="lang-en">8 operators in VR · biometric wearables · supervisor console streaming live telemetry</span><span class="lang-ar">8 مشغلين في الواقع الافتراضي · أجهزة قياس حيوي · وحدة تحكم المشرف تبث القياسات الحية</span></div>
+    </div>
+  </div>
+
+  <div class="p1-body">
+
+    <div class="first-row">
+      <div>
+        <div class="sect-title"><span class="lang-en">Why it is a first</span><span class="lang-ar">لماذا هو الأول من نوعه</span></div>
+        <h3>
+          <span class="lang-en">No command-center solution in the region fuses immersive VR, live biometrics, and AI analysis into one closed training loop.</span>
+          <span class="lang-ar">لا يوجد حلّ لمراكز القيادة في المنطقة يدمج الواقع الافتراضي الغامر، والقياس الحيوي الحي، وتحليل الذكاء الاصطناعي في حلقة تدريب واحدة مغلقة.</span>
+        </h3>
+        <p>
+          <span class="lang-en">Traditional after-action review takes a supervisor 4–6 hours per operator and relies on memory. Our stack runs the scenario in VR, streams physiological data from wearables, and lets the AI compose a telemetry-grounded analysis in under 60 seconds.</span>
+          <span class="lang-ar">المراجعة التقليدية بعد الجلسة تستغرق من المشرف 4–6 ساعات لكل مشغل وتعتمد على الذاكرة. منظومتنا تُشغّل السيناريو في الواقع الافتراضي، وتبثّ البيانات الفسيولوجية من الأجهزة القابلة للارتداء، ويُنتج الذكاء الاصطناعي تحليلاً مرتكزاً على البيانات في أقل من 60 ثانية.</span>
+        </p>
+        <ul class="why-list">
+          <li><span class="lang-en">Immersive VR simulation: airport, stadium, transit and critical-infrastructure scenarios</span><span class="lang-ar">محاكاة واقع افتراضي غامرة: سيناريوهات مطارات وملاعب ومواصلات وبنية تحتية حيوية</span></li>
+          <li><span class="lang-en">Biometric wearables: heart-rate, EDA, temperature, gaze streams captured live</span><span class="lang-ar">أجهزة قياس حيوي: تلتقط نبض القلب والنشاط الكهربائي للجلد والحرارة ومسار النظر بشكل فوري</span></li>
+          <li><span class="lang-en">AI reporting engine: narrative explanations, multi-dimensional scoring, bilingual output</span><span class="lang-ar">محرك تقارير ذكي: شروحات سردية، تقييم متعدد الأبعاد، مخرجات ثنائية اللغة</span></li>
+        </ul>
+      </div>
+      <div class="first-badge">
+        <div class="num">1<sup style="font-size:.4em;color:var(--gold-light);top:-1.5em">st</sup></div>
+        <div class="lbl"><span class="lang-en">Of Its Kind</span><span class="lang-ar">الأول من نوعه</span></div>
+        <p style="margin-top:1rem;font-size:.8rem;color:var(--ink-soft);line-height:1.5">
+          <span class="lang-en">Regional command-center AI that grades human performance, not just infrastructure health.</span>
+          <span class="lang-ar">ذكاء اصطناعي إقليمي لمركز قيادة يُقيِّم أداء الإنسان، لا صحة البنية التحتية فقط.</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="divider-hex"></div>
+
+    <div class="sect-title"><span class="lang-en">Four Pillars</span><span class="lang-ar">أربعة أعمدة</span></div>
+    <div class="sect-lead"><span class="lang-en">What the integrated VR · biometric · AI stack measures — in every session, automatically.</span><span class="lang-ar">ما تقيسه المنظومة المتكاملة (واقع افتراضي · قياس حيوي · ذكاء اصطناعي) — في كل جلسة، وبشكل آلي.</span></div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-num">01</div>
+        <h4><span class="lang-en">Detection Accuracy</span><span class="lang-ar">دقة الكشف</span></h4>
+        <p><span class="lang-en">Share of suspicious entities the operator correctly marked within their visibility window — weighted 40% of composite.</span><span class="lang-ar">نسبة الأهداف المشتبه بها التي وسّمها المشغل بشكل صحيح داخل نافذة الرؤية — بوزن 40% من الدرجة الإجمالية.</span></p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">02</div>
+        <h4><span class="lang-en">False-Positive Discipline</span><span class="lang-ar">انضباط الإنذار الكاذب</span></h4>
+        <p><span class="lang-en">Restraint in avoiding marks on non-suspicious entities — each false mark penalises the score. Weighted 20%.</span><span class="lang-ar">الانضباط في تجنّب توسيم أهداف غير مشتبه بها — كل توسيم خاطئ يخصم من الدرجة. بوزن 20%.</span></p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">03</div>
+        <h4><span class="lang-en">Timeliness</span><span class="lang-ar">سرعة الاستجابة</span></h4>
+        <p><span class="lang-en">Speed from event onset to operator action — measured at p50 &amp; p90 latencies. Weighted 20%.</span><span class="lang-ar">الزمن من بداية الحدث إلى تحرّك المشغل — يُقاس عند المئين 50 والمئين 90. بوزن 20%.</span></p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">04</div>
+        <h4><span class="lang-en">Attention &amp; Gaze</span><span class="lang-ar">التركيز والنظر</span></h4>
+        <p><span class="lang-en">How well the operator's gaze covered the feeds where threats actually appeared — detects tunnel vision. Weighted 20%.</span><span class="lang-ar">مدى تغطية نظر المشغل للشاشات التي ظهرت عليها التهديدات فعلاً — يكشف رؤية النفق. بوزن 20%.</span></p>
+      </div>
+    </div>
+
+    <div class="divider-hex"></div>
+
+    <div class="sect-title"><span class="lang-en">From VR scenario to command decision</span><span class="lang-ar">من سيناريو الواقع الافتراضي إلى قرار القيادة</span></div>
+    <div class="sect-lead"><span class="lang-en">Three outputs. One workflow. Zero manual review.</span><span class="lang-ar">ثلاثة مخرجات. تدفّق واحد. بلا مراجعة يدوية.</span></div>
+    <p class="sect-body">
+      <span class="lang-en">Each VR session streams action logs and biometric telemetry into the AI engine, which produces a certificate-grade summary for leadership, a full analytical breakdown for the training officer, and a structured dataset the system keeps improving from. Every report auto-renders in English and Arabic and carries a confidentiality classification end-to-end.</span>
+      <span class="lang-ar">تبثّ كل جلسة واقع افتراضي سجلات التحرّكات والإشارات الحيوية إلى محرك الذكاء الاصطناعي، الذي يُنتج ملخصاً بمستوى الشهادة للقيادة، وتحليلاً تفصيلياً لضابط التدريب، ومجموعة بيانات منظّمة يتعلّم منها النظام باستمرار. كل تقرير يظهر بالعربية والإنجليزية تلقائياً ويحمل تصنيف السرية من البداية حتى النهاية.</span>
+    </p>
+
+  </div>
+</section>
+
+<!-- ═══════ PAGE 2 — CERTIFICATE-STYLE SUMMARY ═══════ -->
+<section class="page p2" id="page2">
+  <div class="page-strip">
+    <div class="brand-mark"><img src="mcc-logo.svg" alt="Monitoring &amp; Control Center"></div>
+    <div class="strip-meta">
+      <div>
+        <div class="strip-label"><span class="lang-en">Document</span><span class="lang-ar">المستند</span></div>
+        <div class="strip-value"><span class="lang-en">Session Certificate</span><span class="lang-ar">شهادة الجلسة</span></div>
+      </div>
+      <div>
+        <div class="strip-label"><span class="lang-en">Page</span><span class="lang-ar">الصفحة</span></div>
+        <div class="strip-value">02 / 03</div>
+      </div>
+    </div>
+  </div>
+  <div class="cert">
+
+    <div class="cert-head">
+      <div class="cert-crest"><span>MCC</span></div>
+      <div class="cert-kicker"><span class="lang-en">Operator Performance · Session Certificate</span><span class="lang-ar">أداء المشغل · شهادة الجلسة</span></div>
+      <div class="cert-title"><span class="lang-en">Session Intelligence Summary</span><span class="lang-ar">ملخص ذكاء الجلسة</span></div>
+      <div class="cert-sub"><span class="lang-en">Generated by the MCC AI Reporting Engine — command-grade verdict</span><span class="lang-ar">صادر عن محرك التقارير الذكي — حكم بمستوى القيادة</span></div>
+    </div>
+
+    <div class="cert-meta">
+      <div>
+        <div class="k"><span class="lang-en">Scenario</span><span class="lang-ar">السيناريو</span></div>
+        <div class="v"><span class="lang-en">Airport · Suspicious Item</span><span class="lang-ar">مطار · جسم مشبوه</span></div>
+      </div>
+      <div>
+        <div class="k"><span class="lang-en">Duration</span><span class="lang-ar">المدة</span></div>
+        <div class="v">4m 49s</div>
+      </div>
+      <div>
+        <div class="k"><span class="lang-en">Session ID</span><span class="lang-ar">معرّف الجلسة</span></div>
+        <div class="v">S-20260414-2324</div>
+      </div>
+      <div>
+        <div class="k"><span class="lang-en">Generated</span><span class="lang-ar">تاريخ الإصدار</span></div>
+        <div class="v">2026-04-15</div>
+      </div>
+    </div>
+
+    <div class="score-hero">
+      <div class="score-ring">
+        <svg width="240" height="240" viewBox="0 0 240 240">
+          <defs>
+            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#9B8665"/>
+              <stop offset="100%" stop-color="#BAAC98"/>
+            </linearGradient>
+          </defs>
+          <circle class="track" cx="120" cy="120" r="110"/>
+          <circle class="fill" cx="120" cy="120" r="110"/>
+        </svg>
+        <div class="score-val">
+          <div class="n">47</div>
+          <div class="o"><span class="lang-en">Composite / 100</span><span class="lang-ar">الدرجة الإجمالية / 100</span></div>
+          <div class="v"><span class="lang-en">Fail · Remediate</span><span class="lang-ar">راسب · يتطلب معالجة</span></div>
+        </div>
+      </div>
+      <div class="score-verdict">
+        <h3><span class="lang-en">Disciplined judgement — anchored by a single confirmed strength.</span><span class="lang-ar">تمييز منضبط — مرتكز على نقطة قوة واحدة مؤكدة.</span></h3>
+        <p><span class="lang-en">The operator scored 47 / 100 on the “Airport — Suspicious Item” scenario. Performance is anchored by false-positive discipline (80/100), but gaze coverage and reaction latency dragged the composite below pass threshold. Remedial training is recommended before further deployment.</span><span class="lang-ar">حصل المشغل على 47 من 100 في سيناريو «المطار — جسم مشبوه». يرتكز الأداء على انضباط الإنذار الكاذب (80/100)، غير أن تغطية النظر وبطء الاستجابة خفّضا الدرجة الإجمالية دون حدّ النجاح. يُوصى بتدريب علاجي قبل أي نشر جديد.</span></p>
+        <div class="component-mini">
+          <div class="comp warn"><div class="lbl"><span class="lang-en">Detection</span><span class="lang-ar">الكشف</span></div><div class="val">65<span>/100</span></div></div>
+          <div class="comp ok"><div class="lbl"><span class="lang-en">False-Pos.</span><span class="lang-ar">الإنذار الكاذب</span></div><div class="val">80<span>/100</span></div></div>
+          <div class="comp bad"><div class="lbl"><span class="lang-en">Timeliness</span><span class="lang-ar">السرعة</span></div><div class="val">25<span>/100</span></div></div>
+          <div class="comp bad"><div class="lbl"><span class="lang-en">Attention</span><span class="lang-ar">التركيز</span></div><div class="val">0<span>/100</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="findings-grid">
+      <div class="find">
+        <div class="find-h"><span class="tag strength"><span class="lang-en">Strength</span><span class="lang-ar">نقطة قوة</span></span><h4><span class="lang-en">False-positive discipline</span><span class="lang-ar">انضباط الإنذار الكاذب</span></h4></div>
+        <p><span class="lang-en">Only 1 false mark across 4 marking decisions — clears the 70-point strength threshold. This pattern should be documented and transferred to weaker dimensions.</span><span class="lang-ar">توسيم خاطئ واحد فقط من أصل 4 قرارات — يتجاوز عتبة القوة عند 70 نقطة. يجب توثيق هذا النمط ونقله إلى المحاور الأضعف.</span></p>
+        <div class="evid"><span><b>Score:</b> 80/100</span><span><b>False marks:</b> 1/4</span></div>
+      </div>
+      <div class="find">
+        <div class="find-h"><span class="tag high"><span class="lang-en">High Priority</span><span class="lang-ar">أولوية عالية</span></span><h4><span class="lang-en">Gaze coverage failure</span><span class="lang-ar">فشل في تغطية النظر</span></h4></div>
+        <p><span class="lang-en">21 critical events fired while the operator was watching a different feed. Tunnel vision sat at 45% on Camera_07 while Camera_02 (69% of threats) received only 2% of gaze.</span><span class="lang-ar">أطلقت 21 حادثة حرجة بينما كان المشغل ينظر إلى شاشة أخرى. بلغت رؤية النفق 45% على الكاميرا 07 بينما لم تنل الكاميرا 02 (69% من التهديدات) سوى 2% من النظر.</span></p>
+        <div class="evid"><span><b>Gaze coverage:</b> 2.9%</span><span><b>Events off-gaze:</b> 21</span></div>
+      </div>
+      <div class="find">
+        <div class="find-h"><span class="tag med"><span class="lang-en">Medium Priority</span><span class="lang-ar">أولوية متوسطة</span></span><h4><span class="lang-en">Reaction latency</span><span class="lang-ar">بطء الاستجابة</span></h4></div>
+        <p><span class="lang-en">p90 reaction time reached 80.0s; 5 responses fell into the delayed tier. Recommended: 10-minute scan-pattern drill twice per shift, target p90 &lt; 7s.</span><span class="lang-ar">بلغ المئين 90 لزمن الاستجابة 80 ثانية؛ 5 استجابات في المرتبة المتأخرة. الموصى به: تمرين نمط مسح لمدة 10 دقائق مرتين في كل نوبة، بهدف المئين 90 أقل من 7 ثوانٍ.</span></p>
+        <div class="evid"><span><b>p50:</b> 25.0s</span><span><b>p90:</b> 80.0s</span><span><b>Delayed:</b> 5</span></div>
+      </div>
+      <div class="find">
+        <div class="find-h"><span class="tag low"><span class="lang-en">Data Quality</span><span class="lang-ar">جودة البيانات</span></span><h4><span class="lang-en">Telemetry gaps detected</span><span class="lang-ar">فجوات في القياس</span></h4></div>
+        <p><span class="lang-en">Gaze fixations and biometric streams were below confidence minimums. Confirm the operator device is logging all streams before the next session begins.</span><span class="lang-ar">كانت قنوات النظر والإشارات الحيوية دون الحد الأدنى للثقة. يجب التأكد من تسجيل الجهاز لكل القنوات قبل الجلسة التالية.</span></p>
+        <div class="evid"><span><b>Gaze samples:</b> 0 / 10</span><span><b>Bio samples:</b> 0 / 20</span></div>
+      </div>
+    </div>
+
+    <div class="cert-sign">
+      <div class="sign-block">
+        <div class="line"></div>
+        <div class="nm"><span class="lang-en">Head of Training</span><span class="lang-ar">رئيس التدريب</span></div>
+        <div class="rl"><span class="lang-en">Authorised Reviewer</span><span class="lang-ar">المراجع المعتمد</span></div>
+      </div>
+      <div class="seal"><span class="lang-en">MCC<br>AI Verified<br>2026</span><span class="lang-ar">مركز<br>تحقق ذكي<br>2026</span></div>
+      <div class="sign-block">
+        <div class="line"></div>
+        <div class="nm"><span class="lang-en">General Manager</span><span class="lang-ar">المدير العام</span></div>
+        <div class="rl"><span class="lang-en">Acknowledgement</span><span class="lang-ar">اعتماد</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ PAGE 3 — FULL DETAIL ═══════ -->
+<section class="page p3" id="page3">
+  <div class="page-strip">
+    <div class="brand-mark"><img src="mcc-logo.svg" alt="Monitoring &amp; Control Center"></div>
+    <div class="strip-meta">
+      <div>
+        <div class="strip-label"><span class="lang-en">Document</span><span class="lang-ar">المستند</span></div>
+        <div class="strip-value"><span class="lang-en">Full Analytical Detail</span><span class="lang-ar">التحليل التفصيلي الكامل</span></div>
+      </div>
+      <div>
+        <div class="strip-label"><span class="lang-en">Page</span><span class="lang-ar">الصفحة</span></div>
+        <div class="strip-value">03 / 03</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p3-head">
+    <div class="k"><span class="lang-en">Full Analytical Breakdown</span><span class="lang-ar">التحليل التفصيلي الكامل</span></div>
+    <h2><span class="lang-en">Session Telemetry · Metrics · Recommendations</span><span class="lang-ar">بيانات الجلسة · المقاييس · التوصيات</span></h2>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-tile"><div class="k"><span class="lang-en">Scenario</span><span class="lang-ar">السيناريو</span></div><div class="v"><span class="lang-en">Airport · Suspicious Item</span><span class="lang-ar">مطار · جسم مشبوه</span></div></div>
+    <div class="meta-tile"><div class="k"><span class="lang-en">Duration</span><span class="lang-ar">المدة</span></div><div class="v">4m 49s</div></div>
+    <div class="meta-tile"><div class="k"><span class="lang-en">Feeds</span><span class="lang-ar">الشاشات</span></div><div class="v">8 / 8</div></div>
+    <div class="meta-tile"><div class="k"><span class="lang-en">Suspicious Entities</span><span class="lang-ar">الأهداف المشبوهة</span></div><div class="v">4</div></div>
+    <div class="meta-tile"><div class="k"><span class="lang-en">Classification</span><span class="lang-ar">التصنيف</span></div><div class="v"><span class="lang-en">Confidential</span><span class="lang-ar">سرّي</span></div></div>
+  </div>
+
+  <!-- Composite -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">Composite Breakdown</span><span class="lang-ar">تفصيل الدرجة الإجمالية</span></h3><div class="n">47 / 100</div></div>
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="lang-en">Metric</span><span class="lang-ar">المقياس</span></th>
+        <th><span class="lang-en">Score</span><span class="lang-ar">الدرجة</span></th>
+        <th><span class="lang-en">Weight</span><span class="lang-ar">الوزن</span></th>
+        <th><span class="lang-en">Description</span><span class="lang-ar">الوصف</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td><b><span class="lang-en">Detection accuracy</span><span class="lang-ar">دقة الكشف</span></b></td><td>65/100</td><td>40%</td><td><span class="lang-en">Share of suspicious entities correctly marked within the visibility window.</span><span class="lang-ar">نسبة الأهداف المشبوهة المُوسَّمة بشكل صحيح داخل نافذة الرؤية.</span></td></tr>
+        <tr><td><b><span class="lang-en">False-positive discipline</span><span class="lang-ar">انضباط الإنذار الكاذب</span></b></td><td>80/100</td><td>20%</td><td><span class="lang-en">Discipline in avoiding marks on non-suspicious entities.</span><span class="lang-ar">الانضباط في تجنّب توسيم أهداف غير مشبوهة.</span></td></tr>
+        <tr><td><b><span class="lang-en">Timeliness</span><span class="lang-ar">السرعة</span></b></td><td>25/100</td><td>20%</td><td><span class="lang-en">Speed from event onset to operator action.</span><span class="lang-ar">الزمن من بداية الحدث إلى استجابة المشغل.</span></td></tr>
+        <tr><td><b><span class="lang-en">Attention &amp; gaze</span><span class="lang-ar">التركيز والنظر</span></b></td><td>0/100</td><td>20%</td><td><span class="lang-en">Gaze coverage of feeds where suspicious activity appeared.</span><span class="lang-ar">تغطية النظر للشاشات التي ظهر عليها نشاط مشبوه.</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Detection -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">Detection Metrics</span><span class="lang-ar">مقاييس الكشف</span></h3><div class="n">4 <span class="lang-en">entities</span><span class="lang-ar">أهداف</span></div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="k"><span class="lang-en">Correct Marks</span><span class="lang-ar">توسيم صحيح</span></div><div class="v">3<small> / 4</small></div></div>
+      <div class="kpi"><div class="k"><span class="lang-en">Missed</span><span class="lang-ar">مفقود</span></div><div class="v">1</div></div>
+      <div class="kpi"><div class="k"><span class="lang-en">False Positives</span><span class="lang-ar">إنذار كاذب</span></div><div class="v">1</div></div>
+      <div class="kpi"><div class="k"><span class="lang-en">Detection Rate</span><span class="lang-ar">نسبة الكشف</span></div><div class="v">75.0<small>%</small></div></div>
+    </div>
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="lang-en">Entity</span><span class="lang-ar">الهدف</span></th>
+        <th><span class="lang-en">Classification</span><span class="lang-ar">التصنيف</span></th>
+        <th><span class="lang-en">Reaction</span><span class="lang-ar">الاستجابة</span></th>
+        <th><span class="lang-en">Status</span><span class="lang-ar">الحالة</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Male 1</td><td>bag_placer</td><td>81.0s</td><td><span class="pill pill-del"><span class="lang-en">Delayed</span><span class="lang-ar">متأخر</span></span></td></tr>
+        <tr><td>Male 2</td><td>restricted_door_operative</td><td>—</td><td><span class="pill pill-miss"><span class="lang-en">Missed</span><span class="lang-ar">مفقود</span></span></td></tr>
+        <tr><td>Female 1</td><td>coordinator_lookout</td><td>25.0s</td><td><span class="pill pill-del"><span class="lang-en">Delayed</span><span class="lang-ar">متأخر</span></span></td></tr>
+        <tr><td>Backpack</td><td>suspicious_item</td><td>80.0s</td><td><span class="pill pill-del"><span class="lang-en">Delayed</span><span class="lang-ar">متأخر</span></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Alarms + Timeliness -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">Alarm Response &amp; Timeliness</span><span class="lang-ar">الاستجابة للإنذارات والسرعة</span></h3></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="k"><span class="lang-en">p50 Latency</span><span class="lang-ar">المئين 50</span></div><div class="v">25.0<small>s</small></div></div>
+      <div class="kpi"><div class="k"><span class="lang-en">p90 Latency</span><span class="lang-ar">المئين 90</span></div><div class="v">80.0<small>s</small></div></div>
+      <div class="kpi"><div class="k"><span class="lang-en">Fast ≤5s</span><span class="lang-ar">سريع</span></div><div class="v">2</div></div>
+      <div class="kpi"><div class="k"><span class="lang-en">Delayed</span><span class="lang-ar">متأخر</span></div><div class="v">5</div></div>
+    </div>
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="lang-en">Alarm Time</span><span class="lang-ar">وقت الإنذار</span></th>
+        <th><span class="lang-en">Response</span><span class="lang-ar">الاستجابة</span></th>
+        <th><span class="lang-en">Tier</span><span class="lang-ar">المستوى</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>04:29</td><td>2.0s</td><td><span class="pill pill-pro"><span class="lang-en">Proactive</span><span class="lang-ar">استباقي</span></span></td></tr>
+        <tr><td>04:47</td><td>26.0s</td><td><span class="pill pill-del"><span class="lang-en">Delayed</span><span class="lang-ar">متأخر</span></span></td></tr>
+        <tr><td>04:56</td><td>17.0s</td><td><span class="pill pill-del"><span class="lang-en">Delayed</span><span class="lang-ar">متأخر</span></span></td></tr>
+        <tr><td>06:48</td><td>0.0s</td><td><span class="pill pill-pro"><span class="lang-en">Proactive</span><span class="lang-ar">استباقي</span></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gaze distribution -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">Gaze &amp; Attention Distribution</span><span class="lang-ar">توزيع النظر والتركيز</span></h3><div class="n">2.9% <span class="lang-en">coverage</span><span class="lang-ar">تغطية</span></div></div>
+    <p class="quote"><span class="lang-en">Gaze matched the event feed for 3 / 62 critical events (4.8%). Largest gap — Camera_02 held 69% of critical events but received only 2% of gaze. Camera_07 dominated attention at 45%.</span><span class="lang-ar">تطابق النظر مع شاشة الحدث في 3 من 62 حادثة حرجة (4.8%). أكبر فجوة — الكاميرا 02 احتوت 69% من الأحداث الحرجة ولم تنل سوى 2% من النظر. هيمنت الكاميرا 07 على التركيز بنسبة 45%.</span></p>
+    <table class="tbl" style="margin-top:1rem">
+      <thead><tr>
+        <th><span class="lang-en">Camera</span><span class="lang-ar">الكاميرا</span></th>
+        <th><span class="lang-en">Dwell %</span><span class="lang-ar">نسبة التركيز</span></th>
+        <th><span class="lang-en">Critical Events</span><span class="lang-ar">أحداث حرجة</span></th>
+        <th><span class="lang-en">Missed Off-Gaze</span><span class="lang-ar">فوّت خارج النظر</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Camera_07</td><td>45.3%</td><td>0</td><td>0</td></tr>
+        <tr><td>Camera_08</td><td>21.1%</td><td>0</td><td>0</td></tr>
+        <tr><td><span class="lang-en">None (unfocused)</span><span class="lang-ar">غير مركّز</span></td><td>14.8%</td><td>—</td><td>—</td></tr>
+        <tr><td>Camera_04</td><td>11.9%</td><td>2</td><td>2</td></tr>
+        <tr style="background:#fef6f2"><td><b>Camera_02</b></td><td>2.3%</td><td><b>18</b></td><td><b>15</b></td></tr>
+        <tr><td>Camera_03</td><td>2.0%</td><td>6</td><td>6</td></tr>
+        <tr><td>Camera_05</td><td>1.4%</td><td>0</td><td>0</td></tr>
+        <tr><td>Camera_01</td><td>1.1%</td><td>0</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Biometrics -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">Biometric Baseline</span><span class="lang-ar">خط الأساس الحيوي</span></h3></div>
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="lang-en">Metric</span><span class="lang-ar">المقياس</span></th>
+        <th><span class="lang-en">Average</span><span class="lang-ar">المتوسط</span></th>
+        <th><span class="lang-en">Min</span><span class="lang-ar">الأدنى</span></th>
+        <th><span class="lang-en">Max</span><span class="lang-ar">الأعلى</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td><span class="lang-en">Heart rate</span><span class="lang-ar">نبض القلب</span></td><td>72.7 bpm</td><td>58.3</td><td>83.2</td></tr>
+        <tr><td>EDA</td><td>0.1561 μS</td><td>0.0857</td><td>0.1965</td></tr>
+        <tr><td>SCR <span class="lang-en">amplitude</span><span class="lang-ar">السعة</span></td><td>0.0501 μS</td><td>0.0221</td><td>0.1343</td></tr>
+        <tr><td><span class="lang-en">Temperature</span><span class="lang-ar">الحرارة</span></td><td>35.6 °C</td><td>35.0</td><td>35.9</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Stress episodes -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">Stress Episodes</span><span class="lang-ar">نوبات الإجهاد</span></h3><div class="n">4 <span class="lang-en">detected</span><span class="lang-ar">مرصودة</span></div></div>
+    <p class="quote"><span class="lang-en">Detected 4 stress episodes across the session (total 5s above baseline). Peak reached 83 bpm at t=208s.</span><span class="lang-ar">رُصدت 4 نوبات إجهاد خلال الجلسة (إجماليّها 5 ثوانٍ فوق خط الأساس). بلغ الذروة 83 نبضة/دقيقة عند الزمن 208ث.</span></p>
+    <table class="tbl" style="margin-top:1rem">
+      <thead><tr>
+        <th>#</th>
+        <th><span class="lang-en">Peak</span><span class="lang-ar">الذروة</span></th>
+        <th><span class="lang-en">Duration</span><span class="lang-ar">المدة</span></th>
+        <th><span class="lang-en">Indicator</span><span class="lang-ar">المؤشر</span></th>
+        <th><span class="lang-en">Likely Trigger</span><span class="lang-ar">المثير المحتمل</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>1</td><td>t=208.0s</td><td>5.0s</td><td>HR 83.2 bpm (+14.5%)</td><td><span class="lang-en">Critical event on Male_2 at t=202s</span><span class="lang-ar">حدث حرج على Male_2 عند 202ث</span></td></tr>
+        <tr><td>2</td><td>t=341.0s</td><td>1.0s</td><td>EDA 0.19 μS (+23.3%)</td><td><span class="lang-en">No nearby event correlated</span><span class="lang-ar">لا حدث مقترن</span></td></tr>
+        <tr><td>3</td><td>t=417.0s</td><td>1.0s</td><td>EDA 0.19 μS (+22.5%)</td><td><span class="lang-en">No nearby event correlated</span><span class="lang-ar">لا حدث مقترن</span></td></tr>
+        <tr><td>4</td><td>t=464.0s</td><td>1.0s</td><td>EDA 0.20 μS (+25.9%)</td><td><span class="lang-en">No nearby event correlated</span><span class="lang-ar">لا حدث مقترن</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Performance feedback -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">AI Performance Feedback</span><span class="lang-ar">تغذية راجعة من الذكاء الاصطناعي</span></h3></div>
+    <p class="quote"><span class="lang-en">During this 4m 49s session on the “Airport — Suspicious Item” scenario, the operator kept false positives to 1 across 4 marking decisions, signalling disciplined judgement — and engaged all 8 camera feeds, maintaining broad situational awareness. However, 1 of 4 suspicious entities (Male 2) was missed, and reaction times slipped into the delayed tier 5 times, with a p90 of 80.0s.</span><span class="lang-ar">خلال هذه الجلسة التي استمرت 4 دقائق و49 ثانية في سيناريو «المطار — جسم مشبوه»، أبقى المشغل الإنذارات الكاذبة عند واحدة فقط من بين 4 قرارات توسيم، مما يعكس تمييزاً منضبطاً — كما تفاعل مع جميع الشاشات الثماني محافظاً على وعي ظرفي واسع. غير أنه فوّت هدفاً واحداً من أصل 4 أهداف مشبوهة (Male 2)، وانزلق زمن الاستجابة إلى المرتبة المتأخرة 5 مرات، بالمئين 90 عند 80.0 ثانية.</span></p>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="block">
+    <div class="block-h"><div class="dot"></div><h3><span class="lang-en">Insights &amp; Recommendations</span><span class="lang-ar">الرؤى والتوصيات</span></h3></div>
+
+    <div class="rec">
+      <div class="rec-h"><span class="tag high"><span class="lang-en">High</span><span class="lang-ar">عالية</span></span><h4><span class="lang-en">Broaden gaze coverage</span><span class="lang-ar">توسيع تغطية النظر</span></h4></div>
+      <p><span class="lang-en"><b>Action —</b> Increase critical-feed coverage by enforcing a rotation cadence.</span><span class="lang-ar"><b>الإجراء —</b> رفع تغطية الشاشات الحرجة بفرض دورة تناوب.</span></p>
+      <p><span class="lang-en"><b>Why —</b> 21 critical events fired while watching a different feed; tunnel vision at 45% on Camera_07.</span><span class="lang-ar"><b>السبب —</b> انطلقت 21 حادثة حرجة خلال مشاهدة شاشة أخرى؛ رؤية نفق 45% على الكاميرا 07.</span></p>
+      <p><span class="lang-en"><b>How —</b> Adopt a 12-second rotation on Camera_07. Audit feed dwell live via the supervisor overlay.</span><span class="lang-ar"><b>الكيفية —</b> اعتماد دورة 12 ثانية على الكاميرا 07 ومراجعة زمن التركيز مباشرة عبر واجهة المشرف.</span></p>
+    </div>
+
+    <div class="rec">
+      <div class="rec-h"><span class="tag med"><span class="lang-en">Medium</span><span class="lang-ar">متوسطة</span></span><h4><span class="lang-en">Compress reaction latency</span><span class="lang-ar">تقليص زمن الاستجابة</span></h4></div>
+      <p><span class="lang-en"><b>Action —</b> Cut p90 reaction time by pre-staging scan patterns on high-traffic feeds.</span><span class="lang-ar"><b>الإجراء —</b> خفض المئين 90 لزمن الاستجابة عبر تجهيز مسبق لأنماط المسح على الشاشات عالية الحركة.</span></p>
+      <p><span class="lang-en"><b>Why —</b> p90 reaction time reached 80.0s; 5 responses fell into the delayed tier.</span><span class="lang-ar"><b>السبب —</b> بلغ المئين 90 لزمن الاستجابة 80 ثانية؛ 5 استجابات في المرتبة المتأخرة.</span></p>
+      <p><span class="lang-en"><b>How —</b> Run a 10-minute scan-pattern drill twice per shift; target p90 under 7s.</span><span class="lang-ar"><b>الكيفية —</b> تمرين أنماط مسح لمدة 10 دقائق مرتين بالنوبة؛ الهدف المئين 90 أقل من 7 ثوانٍ.</span></p>
+    </div>
+
+    <div class="rec">
+      <div class="rec-h"><span class="tag low"><span class="lang-en">Growth</span><span class="lang-ar">تنمية</span></span><h4><span class="lang-en">Extend a confirmed strength</span><span class="lang-ar">توسيع نقطة قوة مؤكدة</span></h4></div>
+      <p><span class="lang-en"><b>Action —</b> Convert the strongest dimension into a transferable scanning pattern.</span><span class="lang-ar"><b>الإجراء —</b> تحويل أقوى محور إلى نمط مسح قابل للنقل.</span></p>
+      <p><span class="lang-en"><b>Why —</b> False-positive discipline scored 80/100 — the strongest signal. Lean into it.</span><span class="lang-ar"><b>السبب —</b> حقّق انضباط الإنذار الكاذب 80/100 — الإشارة الأقوى. يُبنى عليها.</span></p>
+      <p><span class="lang-en"><b>How —</b> Document the scan pattern that produced the discipline score and adapt it to weaker dimensions.</span><span class="lang-ar"><b>الكيفية —</b> توثيق نمط المسح الذي أنتج هذه الدرجة وتكييفه للمحاور الأضعف.</span></p>
+    </div>
+
+    <div class="rec">
+      <div class="rec-h"><span class="tag low"><span class="lang-en">Data Quality</span><span class="lang-ar">جودة البيانات</span></span><h4><span class="lang-en">Expand telemetry capture</span><span class="lang-ar">توسيع التقاط القياس</span></h4></div>
+      <p><span class="lang-en"><b>Action —</b> Raise telemetry coverage so future sessions surface the signals this one lacked.</span><span class="lang-ar"><b>الإجراء —</b> رفع تغطية القياس حتى تُظهر الجلسات القادمة الإشارات المفقودة هنا.</span></p>
+      <p><span class="lang-en"><b>Why —</b> Gaze fixations and biometric streams were sparse or unavailable.</span><span class="lang-ar"><b>السبب —</b> كانت قنوات تثبيت النظر والإشارات الحيوية شحيحة أو غير متوفرة.</span></p>
+      <p><span class="lang-en"><b>How —</b> Confirm the operator device is logging gaze fixations and biometric samples before the next session begins.</span><span class="lang-ar"><b>الكيفية —</b> التأكد من تسجيل الجهاز لتثبيتات النظر وعينات القياس الحيوي قبل بدء الجلسة التالية.</span></p>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <span class="lang-en">MCC Operator Performance System · Confidential · Generated by AI Reporting Engine</span>
+    <span class="lang-ar">نظام أداء المشغلين · سرّي · صادر عن محرك التقارير الذكي</span>
+  </div>
+
+</section>
+
+</div>
+
+<!-- Bottom pager -->
+<div class="pager" id="pager">
+  <button class="arr" id="prevBtn" aria-label="Previous">‹</button>
+  <div class="dots">
+    <button class="dot active" data-slide="1" aria-label="Page 1"></button>
+    <button class="dot" data-slide="2" aria-label="Page 2"></button>
+    <button class="dot" data-slide="3" aria-label="Page 3"></button>
+  </div>
+  <div class="pcount"><span id="pIdx">01</span> / 03</div>
+  <button class="arr" id="nextBtn" aria-label="Next">›</button>
+</div>
+
+<script>
+function setLang(lang){
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  const b=document.getElementById('langBtn');
+  if(b)b.textContent=lang==='ar'?'English':'العربية';
+  try{localStorage.setItem('mcc_lang',lang)}catch(e){}
+}
+function toggleLang(){setLang(document.documentElement.lang==='ar'?'en':'ar')}
+try{setLang(localStorage.getItem('mcc_lang')||'en')}catch(e){setLang('en')}
+
+// ─── Slide navigation ───
+const slides=document.querySelectorAll('.page');
+const navLinks=document.querySelectorAll('.page-nav a');
+const dots=document.querySelectorAll('.pager .dot');
+const prevBtn=document.getElementById('prevBtn');
+const nextBtn=document.getElementById('nextBtn');
+const pIdx=document.getElementById('pIdx');
+let current=1;
+function showSlide(n){
+  n=Math.max(1,Math.min(slides.length,n));
+  current=n;
+  slides.forEach((s,i)=>s.classList.toggle('active',i+1===n));
+  navLinks.forEach(a=>a.classList.toggle('active',parseInt(a.dataset.slide)===n));
+  dots.forEach(d=>d.classList.toggle('active',parseInt(d.dataset.slide)===n));
+  pIdx.textContent=String(n).padStart(2,'0');
+  prevBtn.disabled=(n===1);
+  nextBtn.disabled=(n===slides.length);
+  window.scrollTo({top:0,behavior:'instant'});
+}
+navLinks.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showSlide(parseInt(a.dataset.slide))}));
+dots.forEach(d=>d.addEventListener('click',()=>showSlide(parseInt(d.dataset.slide))));
+prevBtn.addEventListener('click',()=>showSlide(current-1));
+nextBtn.addEventListener('click',()=>showSlide(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')showSlide(current+1);
+  else if(e.key==='ArrowLeft'||e.key==='PageUp')showSlide(current-1);
+});
+showSlide(1);
+
+/* ─── Password gate ─── */
+const PASS_HASH='7914fac274db780fed02fe9ba8da03aba278446f627a4b82402eca97fee20d56';
+async function sha256(t){const d=new TextEncoder().encode(t);const h=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function checkPassword(){
+  const v=document.getElementById('pwInput').value;
+  const h=await sha256(v);
+  if(h===PASS_HASH){
+    document.getElementById('pwGate').classList.add('hidden');
+    document.body.style.overflow='';
+    sessionStorage.setItem('mcc_auth','1');
+  } else {
+    document.getElementById('pwErr').textContent=document.documentElement.lang==='ar'?'رمز غير صحيح':'Incorrect access code';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkPassword()});
+if(sessionStorage.getItem('mcc_auth')==='1'){
+  document.getElementById('pwGate').classList.add('hidden');
+} else {
+  document.body.style.overflow='hidden';
+}
+</script>
+</body>
+</html>
