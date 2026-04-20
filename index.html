@@ -271,14 +271,37 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
 
 .footer-note{text-align:center;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);padding:2rem;font-weight:600}
 
-/* Print — show all pages, one per sheet */
+/* Print — show all pages, one per sheet, full color */
+@page{size:A4 landscape;margin:0}
 @media print{
-  body{background:#fff}
-  .chrome,.pager{display:none!important}
-  .stage{padding:0;display:block}
-  .page{display:block!important;box-shadow:none;margin:0;page-break-after:always;width:100%;border-radius:0}
-  .page:last-child{page-break-after:auto}
-  .page-strip{position:static}
+  *,*::before,*::after{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+    color-adjust:exact !important;
+  }
+  html,body{background:#fff !important;margin:0 !important;padding:0 !important}
+  .chrome,.pager,.pw-gate{display:none !important}
+  .stage{padding:0 !important;display:block !important;min-height:0 !important}
+  .page{
+    display:block !important;
+    box-shadow:none !important;
+    margin:0 !important;
+    width:100% !important;
+    max-width:100% !important;
+    border-radius:0 !important;
+    page-break-after:always;
+    break-after:page;
+    overflow:visible !important;
+    animation:none !important;
+  }
+  .page:last-child{page-break-after:auto;break-after:auto}
+  .page-strip{position:static !important}
+  .p1-hero{padding:3rem 3rem 2.2rem !important}
+  .p1-body{padding:2.2rem 3rem 2.5rem !important}
+  .p1-visual{padding:1.2rem 3rem .8rem !important}
+  .p3{padding:2.2rem 2.8rem 2.5rem !important}
+  .cert{padding:2.5rem 2.5rem 2rem !important}
+  .pillar,.find,.rec,.score-hero,.first-row,.cert-meta,.kpi,.comp,.meta-tile{break-inside:avoid;page-break-inside:avoid}
 }
 @media (max-width:800px){
   .p1-body,.p3,.cert{padding:2.5rem 1.5rem 3rem}
