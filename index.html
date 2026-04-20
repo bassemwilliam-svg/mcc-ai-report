@@ -271,7 +271,7 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
 
 .footer-note{text-align:center;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);padding:2rem;font-weight:600}
 
-/* Print — show all pages, one per sheet, full color */
+/* Print — force landscape, preserve colors, scale to fit */
 @page{size:A4 landscape;margin:0}
 @media print{
   *,*::before,*::after{
@@ -279,7 +279,7 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
     print-color-adjust:exact !important;
     color-adjust:exact !important;
   }
-  html,body{background:#fff !important;margin:0 !important;padding:0 !important}
+  html,body{background:#fff !important;margin:0 !important;padding:0 !important;font-size:13px !important}
   .chrome,.pager,.pw-gate{display:none !important}
   .stage{padding:0 !important;display:block !important;min-height:0 !important}
   .page{
@@ -295,13 +295,103 @@ html[dir="rtl"] .quote{border-left:none;border-right:3px solid var(--gold);font-
     animation:none !important;
   }
   .page:last-child{page-break-after:auto;break-after:auto}
-  .page-strip{position:static !important}
-  .p1-hero{padding:3rem 3rem 2.2rem !important}
-  .p1-body{padding:2.2rem 3rem 2.5rem !important}
-  .p1-visual{padding:1.2rem 3rem .8rem !important}
-  .p3{padding:2.2rem 2.8rem 2.5rem !important}
-  .cert{padding:2.5rem 2.5rem 2rem !important}
-  .pillar,.find,.rec,.score-hero,.first-row,.cert-meta,.kpi,.comp,.meta-tile{break-inside:avoid;page-break-inside:avoid}
+  .page-strip{position:static !important;padding:.7rem 1.8rem !important}
+  .page-strip .brand-mark{height:28px !important}
+
+  /* ── Page 1 — tighter everything ── */
+  .p1-hero{padding:2rem 2.2rem 1.6rem !important}
+  .p1-hero h1{font-size:1.85rem !important;line-height:1.15 !important;margin-bottom:.8rem !important;max-width:none !important}
+  .p1-eyebrow{font-size:.58rem !important;padding:.35rem .8rem !important;margin-bottom:.9rem !important}
+  .p1-sub{font-size:.82rem !important;line-height:1.55 !important;max-width:none !important}
+  .p1-body{padding:1.5rem 2.2rem 1.8rem !important}
+  .p1-visual{padding:1rem 2.2rem .6rem !important}
+  .p1-visual img{max-width:720px !important}
+  .p1-visual .caption{margin-top:.5rem !important}
+  .sect-title{font-size:.62rem !important;margin-bottom:.4rem !important}
+  .sect-lead{font-size:1.15rem !important;margin-bottom:.7rem !important;line-height:1.25 !important}
+  .sect-body{font-size:.8rem !important;margin-bottom:1.2rem !important;max-width:none !important}
+  .divider-hex{height:24px !important;margin:1.2rem 0 !important}
+  .pillars{gap:.8rem !important;margin-bottom:1.4rem !important}
+  .pillar{padding:1rem .9rem !important}
+  .pillar-num{font-size:1.8rem !important;margin-bottom:.2rem !important}
+  .pillar h4{font-size:.82rem !important;margin-bottom:.4rem !important}
+  .pillar p{font-size:.72rem !important;line-height:1.45 !important}
+  .first-row{padding:1.3rem !important;gap:1.2rem !important;margin-bottom:1.2rem !important}
+  .first-row h3{font-size:1rem !important;margin-bottom:.5rem !important}
+  .first-row p{font-size:.76rem !important;margin-bottom:.4rem !important}
+  .first-badge{padding:.8rem !important}
+  .first-badge .num{font-size:3.2rem !important}
+  .first-badge .lbl{font-size:.6rem !important}
+  .why-list li{font-size:.76rem !important;padding:.3rem 0 .3rem 1.4rem !important}
+  html[dir="rtl"] .why-list li{padding:.3rem 1.4rem .3rem 0 !important}
+
+  /* ── Page 2 — Certificate ── */
+  .p2{background:#fafaf7 !important}
+  .cert{padding:1.8rem 2rem 1.4rem !important}
+  .cert-head{margin-bottom:1rem !important}
+  .cert-crest{width:58px !important;height:58px !important;margin-bottom:.7rem !important}
+  .cert-crest span{font-size:.75rem !important}
+  .cert-kicker{font-size:.6rem !important;margin-bottom:.5rem !important}
+  .cert-title{font-size:1.9rem !important;margin-bottom:.3rem !important}
+  html[lang="ar"] .cert-title{font-size:1.55rem !important}
+  .cert-sub{font-size:.75rem !important}
+  .cert-meta{gap:1.6rem !important;margin:.9rem 0 1rem !important;padding:.7rem 0 !important}
+  .cert-meta .k{font-size:.56rem !important}
+  .cert-meta .v{font-size:.78rem !important}
+  .score-hero{grid-template-columns:200px 1fr !important;gap:1.4rem !important;padding:1.2rem !important;margin-bottom:1rem !important}
+  .score-ring{width:170px !important;height:170px !important}
+  .score-ring svg{width:170px !important;height:170px !important}
+  .score-val .n{font-size:2.6rem !important}
+  .score-val .o{font-size:.62rem !important}
+  .score-val .v{font-size:.58rem !important}
+  .score-verdict h3{font-size:1rem !important;margin-bottom:.5rem !important}
+  .score-verdict p{font-size:.78rem !important;margin-bottom:.5rem !important}
+  .component-mini{gap:.5rem !important;margin-top:.7rem !important}
+  .comp{padding:.5rem .65rem !important}
+  .comp .lbl{font-size:.56rem !important}
+  .comp .val{font-size:.88rem !important}
+  .findings-grid{gap:.8rem !important;margin-bottom:1rem !important}
+  .find{padding:.9rem !important}
+  .find-h h4{font-size:.85rem !important}
+  .find-h .tag{font-size:.52rem !important;padding:.15rem .4rem !important}
+  .find p{font-size:.74rem !important;line-height:1.5 !important}
+  .find .evid{font-size:.66rem !important;margin-top:.5rem !important;padding-top:.5rem !important}
+  .cert-sign{margin-top:1.1rem !important;padding-top:.9rem !important}
+  .seal{width:64px !important;height:64px !important;font-size:.54rem !important;padding:.5rem !important}
+  .sign-block .line{margin:1.1rem auto .3rem !important}
+  .sign-block .nm{font-size:.72rem !important}
+  .sign-block .rl{font-size:.58rem !important}
+
+  /* ── Page 3 — Detail ── */
+  .p3{padding:1.6rem 2rem 1.8rem !important}
+  .p3-head{margin-bottom:1.2rem !important;padding-bottom:.8rem !important}
+  .p3-head .k{font-size:.62rem !important;margin-bottom:.3rem !important}
+  .p3-head h2{font-size:1.5rem !important}
+  .meta-grid{gap:.6rem !important;margin-bottom:1.3rem !important}
+  .meta-tile{padding:.6rem .75rem !important}
+  .meta-tile .k{font-size:.54rem !important}
+  .meta-tile .v{font-size:.78rem !important}
+  .block{margin-bottom:1.3rem !important}
+  .block-h{margin-bottom:.7rem !important;padding-bottom:.4rem !important}
+  .block-h h3{font-size:.95rem !important}
+  .block-h .n{font-size:.6rem !important}
+  .tbl{font-size:.72rem !important}
+  .tbl th{font-size:.56rem !important;padding:.45rem .55rem !important}
+  .tbl td{padding:.42rem .55rem !important}
+  .kpi-row{gap:.6rem !important;margin-bottom:.7rem !important}
+  .kpi{padding:.7rem .85rem !important}
+  .kpi .k{font-size:.56rem !important}
+  .kpi .v{font-size:1.05rem !important}
+  .rec{padding:.9rem 1rem !important;margin-bottom:.6rem !important}
+  .rec-h h4{font-size:.82rem !important}
+  .rec p{font-size:.74rem !important}
+  .rec .label{font-size:.6rem !important}
+  .quote{padding:.9rem 1.1rem !important;font-size:.78rem !important}
+  .footer-note{font-size:.6rem !important;padding:1rem !important}
+
+  /* keep small cards together; allow tall containers to break naturally */
+  .pillar,.find,.rec,.kpi,.comp,.meta-tile,.cert-meta > div,.sign-block{break-inside:avoid;page-break-inside:avoid}
+  .page-strip{break-after:avoid;page-break-after:avoid}
 }
 @media (max-width:800px){
   .p1-body,.p3,.cert{padding:2.5rem 1.5rem 3rem}
